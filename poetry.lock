@@ -626,6 +626,20 @@ MarkupSafe = ">=2.0"
 i18n = ["Babel (>=2.7)"]
 
 [[package]]
+name = "jose"
+version = "1.0.0"
+description = "An implementation of the JOSE draft"
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "jose-1.0.0.tar.gz", hash = "sha256:8436c3617cd94e1ba97828fbb1ce27c129f66c78fb855b4bb47e122b5f345fba"},
+]
+
+[package.dependencies]
+pycrypto = ">=2.6"
+
+[[package]]
 name = "lxml"
 version = "5.3.1"
 description = "Powerful and Pythonic XML processing library combining libxml2/libxslt with the ElementTree API."
@@ -1062,6 +1076,17 @@ files = [
     {file = "psycopg_binary-3.2.5-cp39-cp39-musllinux_1_2_ppc64le.whl", hash = "sha256:605f70e267222d567fc40de7813ee3fb29f8145a1a20aa6fd3dc62baba9312f1"},
     {file = "psycopg_binary-3.2.5-cp39-cp39-musllinux_1_2_x86_64.whl", hash = "sha256:2b053eae21dd3a6828b516a1171e1274d1af5f7c07d2d9a8f597f2e19c732168"},
     {file = "psycopg_binary-3.2.5-cp39-cp39-win_amd64.whl", hash = "sha256:23a1dc61abb8f7cc702472ab29554167a9421842f976c201ceb3b722c0299769"},
+]
+
+[[package]]
+name = "pycrypto"
+version = "2.6.1"
+description = "Cryptographic modules for Python."
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "pycrypto-2.6.1.tar.gz", hash = "sha256:f2ce1e989b272cfcb677616763e0a2e7ec659effa67a88aa92b3a65528f60a3c"},
 ]
 
 [[package]]
@@ -1952,4 +1977,4 @@ files = [
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.13"
-content-hash = "26acb207b6259f3d9b5dbaaa3432d5ccb6a2118bf1271349fd9f7f9eede3a46d"
+content-hash = "fe62f65b7cfa6221634cdf28e75fd6582cef8acf65c74387912feacf5863ac9e"
