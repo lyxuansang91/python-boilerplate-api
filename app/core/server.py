@@ -4,15 +4,15 @@ from fastapi.routing import APIRoute
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from app.api.routes import router
-from app.core.config import settings
-from app.core.exceptions import CustomException
-from app.core.fastapi.dependencies import Logging
-from app.core.fastapi.middlewares import (
-    AuthBackend,
-    AuthenticationMiddleware,
+from api.routes.v1 import v1_router as router
+from core.config import settings
+from core.exceptions import CustomException
+from core.fastapi.dependencies import Logging
+from core.fastapi.middlewares import (
+    # AuthBackend,
+    # AuthenticationMiddleware,
     ResponseLoggerMiddleware,
-    SQLAlchemyMiddleware,
+    # SQLAlchemyMiddleware,
 )
 
 
@@ -51,12 +51,12 @@ def make_middleware() -> list[Middleware]:
             allow_methods=["*"],
             allow_headers=["*"],
         ),
-        Middleware(
-            AuthenticationMiddleware,
-            backend=AuthBackend(),
-            on_error=on_auth_error,
-        ),
-        Middleware(SQLAlchemyMiddleware),
+        # Middleware(
+        #     AuthenticationMiddleware,
+        #     backend=AuthBackend(),
+        #     on_error=on_auth_error,
+        # ),
+        # Middleware(SQLAlchemyMiddleware),
         Middleware(ResponseLoggerMiddleware),
     ]
     return middleware

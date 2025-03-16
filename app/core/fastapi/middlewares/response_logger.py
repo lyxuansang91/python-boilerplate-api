@@ -6,7 +6,7 @@ from starlette.types import ASGIApp, Message, Receive, Scope, Send
 
 class ResponseInfo(SQLModel):
     headers: Headers | None = Field(default=None, title="Response header")
-    body: str = Field(default="", title="응답 바디")
+    body: str = Field(default="", title="Response body")
     status_code: int | None = Field(default=None, title="Status code")
 
     class Config:
