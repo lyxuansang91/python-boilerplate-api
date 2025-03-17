@@ -2,9 +2,7 @@
 name = "python-boilerplate-api"
 version = "0.1.0"
 description = ""
-authors = [
-    {name = "Sang Ly",email = "sang.lxuan@gmail.com"}
-]
+authors = [{ name = "Sang Ly", email = "sang.lxuan@gmail.com" }]
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
@@ -31,6 +29,9 @@ dependencies = [
 [tool.poetry]
 package-mode = false
 
+[tool.poetry.requires-plugins]
+poetry-plugin-export = ">=1.8"
+
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
@@ -46,23 +47,22 @@ exclude = ["alembic"]
 
 [tool.ruff.lint]
 select = [
-    "E",  # pycodestyle errors
-    "W",  # pycodestyle warnings
-    "F",  # pyflakes
-    "I",  # isort
-    "B",  # flake8-bugbear
-    "C4",  # flake8-comprehensions
-    "UP",  # pyupgrade
+    "E",      # pycodestyle errors
+    "W",      # pycodestyle warnings
+    "F",      # pyflakes
+    "I",      # isort
+    "B",      # flake8-bugbear
+    "C4",     # flake8-comprehensions
+    "UP",     # pyupgrade
     "ARG001", # unused arguments in functions
 ]
 ignore = [
-    "E501",  # line too long, handled by black
-    "B008",  # do not perform function calls in argument defaults
-    "W191",  # indentation contains tabs
-    "B904",  # Allow raising exceptions without from e, for HTTPException
+    "E501", # line too long, handled by black
+    "B008", # do not perform function calls in argument defaults
+    "W191", # indentation contains tabs
+    "B904", # Allow raising exceptions without from e, for HTTPException
 ]
 
 [tool.ruff.lint.pyupgrade]
 # Preserve types, even if a file imports `from __future__ import annotations`.
 keep-runtime-typing = true
-

@@ -2,13 +2,15 @@ FROM python:3.13-slim
 
 WORKDIR /app/
 
-RUN apt-get update && apt-get install -y build-essential
+RUN pip install poetry
 
-COPY ./requirements.txt /app/
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN pip install wheel
+COPY pyproject.toml poetry.lock* /app/
 
-RUN pip install -r requirements.txt
+RUN poetry install
 
 COPY ./scripts /app/scripts
 
