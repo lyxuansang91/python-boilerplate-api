@@ -51,9 +51,8 @@ python-boilerplate-api/
 │   └── ...
 ├── tests/
 │   ├── ...
-├── Dockerfile
+├── docker-compose.yml
 ├── pyproject.toml
-├── poetry.lock
 └── README.md
 ```
 
