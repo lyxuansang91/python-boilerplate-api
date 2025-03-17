@@ -1,7 +1,9 @@
-from pydantic import Field, SQLModel
+from pydantic import BaseModel, Field
+
+# from sqlmodel import SQLModel
 
 
-class CurrentUser(SQLModel):
+class CurrentUser(BaseModel):
     id: int = Field(None, description="User ID")
 
     class Config:
