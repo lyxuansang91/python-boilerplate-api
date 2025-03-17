@@ -52,6 +52,7 @@ python-boilerplate-api/
 ├── tests/
 │   ├── ...
 ├── docker-compose.yml
+├── Dockerfile
 ├── pyproject.toml
 └── README.md
 ```
