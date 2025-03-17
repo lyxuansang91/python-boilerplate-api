@@ -15,41 +15,41 @@ class Transactional:
 
     def __call__(self, function):
         @wraps(function)
-        async def decorator(*args, **kwargs):
+        def decorator(*args, **kwargs):
             try:
                 if self.propagation == Propagation.REQUIRED:
-                    result = await self._run_required(
+                    result = self._run_required(
                         function=function,
                         args=args,
                         kwargs=kwargs,
                     )
                 elif self.propagation == Propagation.REQUIRED_NEW:
-                    result = await self._run_required_new(
+                    result = self._run_required_new(
                         function=function,
                         args=args,
                         kwargs=kwargs,
                     )
                 else:
-                    result = await self._run_required(
+                    result = self._run_required(
                         function=function,
                         args=args,
                         kwargs=kwargs,
                     )
             except Exception as exception:
-                await session.rollback()
+                session.rollback()
                 raise exception
 
             return result
 
         return decorator
 
-    async def _run_required(self, function, args, kwargs) -> None:
-        result = await function(*args, **kwargs)
-        await session.commit()
+    def _run_required(self, function, args, kwargs) -> None:
+        result = function(*args, **kwargs)
+        session.commit()
         return result
 
-    async def _run_required_new(self, function, args, kwargs) -> None:
+    def _run_required_new(self, function, args, kwargs) -> None:
         session.begin()
-        result = await function(*args, **kwargs)
-        await session.commit()
+        result = function(*args, **kwargs)
+        session.commit()
         return result

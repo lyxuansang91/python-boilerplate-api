@@ -1,11 +1,9 @@
 from contextvars import ContextVar, Token
-from typing import Union
 
-from sqlalchemy
-from sqlalchemy.orm import Session, declarative_base, sessionmaker
+from core.config import settings
+from sqlalchemy import create_engine
+from sqlalchemy.orm import Session, declarative_base, scoped_session, sessionmaker
 from sqlalchemy.sql.expression import Delete, Insert, Update
-
-from core.config import config
 
 session_context: ContextVar[str] = ContextVar("session_context")
 
@@ -23,31 +21,30 @@ def reset_session_context(context: Token) -> None:
 
 
 engines = {
-    "writer": create_async_engine(config.POSTGRES_URL, pool_recycle=3600),
-    "reader": create_async_engine(config.POSTGRES_URL, pool_recycle=3600),
+    "writer": create_engine(settings.SQLALCHEMY_DATABASE_URI, pool_recycle=3600),
+    "reader": create_engine(settings.SQLALCHEMY_DATABASE_URI, pool_recycle=3600),
 }
 
 
 class RoutingSession(Session):
     def get_bind(self, mapper=None, clause=None, **kwargs):
-        if self._flushing or isinstance(clause, (Update, Delete, Insert)):
-            return engines["writer"].sync_engine
-        return engines["reader"].sync_engine
+        if self._flushing or isinstance(clause, Update | Delete | Insert):
+            return engines["writer"]
+        return engines["reader"]
 
 
-async_session_factory = sessionmaker(
-    class_=AsyncSession,
-    sync_session_class=RoutingSession,
+session_factory = sessionmaker(
+    class_=Session,
     expire_on_commit=False,
 )
 
-session: Union[AsyncSession, async_scoped_session] = async_scoped_session(
-    session_factory=async_session_factory,
+session: Session = scoped_session(
+    session_factory=session_factory,
     scopefunc=get_session_context,
 )
 
 
-async def get_session():
+def get_session():
     """
     Get the database session.
     This can be used for dependency injection.
@@ -57,7 +54,7 @@ async def get_session():
     try:
         yield session
     finally:
-        await session.close()
+        session.remove()
 
 
 Base = declarative_base()
