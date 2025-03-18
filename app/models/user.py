@@ -1,8 +1,8 @@
 from enum import Enum
 from uuid import uuid4
 
-from core.database import Base
 from core.database.mixins import TimestampMixin
+from . import Base
 from sqlalchemy import BigInteger, Boolean, Column, String
 from sqlalchemy.dialects.postgresql import UUID
 
