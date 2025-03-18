@@ -2,8 +2,6 @@ import secrets
 from typing import Annotated, Any, Literal
 
 from pydantic import (
-    AnyUrl,
-    BeforeValidator,
     PostgresDsn,
     computed_field,
 )
@@ -28,19 +26,14 @@ class Settings(BaseSettings):
 
     BACKEND_CORS_ORIGINS: str | list[str] = "http://localhost:8000"
 
-    model_config = SettingsConfigDict(
-        env_file=".env",
-        env_ignore_empty=True,
-        extra="ignore",
-    )
-
-    PROJECT_NAME: str
-    # SENTRY_DSN: HttpUrl | None = None
+    PROJECT_NAME: str = "FastAPI"
     POSTGRES_SERVER: str
     POSTGRES_PORT: int = 5432
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str = ""
     POSTGRES_DB: str = ""
+
+    model_config = SettingsConfigDict(env_file=".env")
 
     @computed_field
     @property

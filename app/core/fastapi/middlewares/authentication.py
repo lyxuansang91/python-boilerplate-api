@@ -1,12 +1,11 @@
-from jose import JWTError, jwt
+from core.config import settings
+import jwt
+from schemas.extras.current_user import CurrentUser
 from starlette.authentication import AuthenticationBackend
 from starlette.middleware.authentication import (
     AuthenticationMiddleware as BaseAuthenticationMiddleware,
 )
 from starlette.requests import HTTPConnection
-
-from core.config import settings
-from schemas.extras.current_user import CurrentUser
 
 
 class AuthBackend(AuthenticationBackend):
@@ -35,7 +34,7 @@ class AuthBackend(AuthenticationBackend):
                 algorithms=["HS256"],
             )
             user_id = payload.get("user_id")
-        except JWTError:
+        except jwt.DecodeError:
             return False, current_user
 
         current_user.id = user_id

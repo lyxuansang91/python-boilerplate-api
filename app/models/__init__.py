@@ -1,6 +1,5 @@
-from sqlmodel import SQLModel
-
-from .item import Item
+from .base import Base
 from .user import User
 
-__all__ = ["SQLModel", "User", "Item"]
+
+__all__ = ["User", "Base"]

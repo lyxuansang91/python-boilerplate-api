@@ -1,40 +1,25 @@
-import uuid
+from enum import Enum
+from uuid import uuid4
 
-from pydantic import EmailStr
-from sqlmodel import Field, SQLModel
-
-from .base import UserBase
-
-
-# Properties to receive via API on creation
-class UserCreate(UserBase):
-    password: str = Field(min_length=8, max_length=40)
+from core.database.mixins import TimestampMixin
+from . import Base
+from sqlalchemy import BigInteger, Boolean, Column, String
+from sqlalchemy.dialects.postgresql import UUID
 
 
-class UserRegister(SQLModel):
-    email: EmailStr = Field(max_length=255)
-    password: str = Field(min_length=8, max_length=40)
-    full_name: str | None = Field(default=None, max_length=255)
+class UserPermission(Enum):
+    CREATE = "create"
+    READ = "read"
+    EDIT = "edit"
+    DELETE = "delete"
 
 
-# Properties to receive via API on update, all are optional
-class UserUpdate(UserBase):
-    email: EmailStr | None = Field(default=None, max_length=255)  # type: ignore
-    password: str | None = Field(default=None, min_length=8, max_length=40)
-
-
-class UserUpdateMe(SQLModel):
-    full_name: str | None = Field(default=None, max_length=255)
-    email: EmailStr | None = Field(default=None, max_length=255)
-
-
-class UpdatePassword(SQLModel):
-    current_password: str = Field(min_length=8, max_length=40)
-    new_password: str = Field(min_length=8, max_length=40)
-
-
-# Database model, database table inferred from class name
-class User(UserBase, table=True):
+class User(Base, TimestampMixin):
     __tablename__ = "users"
-    id: uuid.UUID = Field(default_factory=uuid.uuid4, primary_key=True)
-    hashed_password: str
+
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    uuid = Column(UUID(as_uuid=True), default=uuid4, unique=True, nullable=False)
+    email = Column(String(255), nullable=False, unique=True)
+    password = Column(String(255), nullable=False)
+    username = Column(String(255), nullable=False, unique=True)
+    is_admin = Column(Boolean, default=False)

@@ -8,14 +8,11 @@ from jwt.exceptions import InvalidTokenError
 from pydantic import ValidationError
 from sqlmodel import Session
 
-from app.core import security
-from app.core.config import settings
-from app.core.db import engine
-from app.models import TokenPayload, User
-
-reusable_oauth2 = OAuth2PasswordBearer(
-    tokenUrl=f"{settings.API_V1_STR}/login/access-token"
-)
+from core import security
+from core.config import settings
+from core.db import engine
+from models import  User
+from repositories import UserRepository
 
 
 def get_db() -> Generator[Session, None, None]:
@@ -23,27 +20,31 @@ def get_db() -> Generator[Session, None, None]:
         yield session
 
 
+
+
 SessionDep = Annotated[Session, Depends(get_db)]
-TokenDep = Annotated[str, Depends(reusable_oauth2)]
+
+def get_user_repository(session: Session = Depends(get_db)) -> Generator[UserRepository, None, None]:
+    return UserRepository(session)
 
 
-def get_current_user(session: SessionDep, token: TokenDep) -> User:
+def get_current_user(session: SessionDep, token: str) -> User:
     try:
         payload = jwt.decode(
             token, settings.SECRET_KEY, algorithms=[security.ALGORITHM]
         )
-        token_data = TokenPayload(**payload)
+        user = session.get(User, payload.get("sub"))
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+        if not user.is_active:
+            raise HTTPException(status_code=400, detail="Inactive user")
+        return user
     except (InvalidTokenError, ValidationError):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Could not validate credentials",
         )
-    user = session.get(User, token_data.sub)
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    if not user.is_active:
-        raise HTTPException(status_code=400, detail="Inactive user")
-    return user
+    
 
 
 CurrentUser = Annotated[User, Depends(get_current_user)]
