@@ -18,7 +18,7 @@ from fastapi import APIRouter
 #     verify_password_reset_token,
 # )
 
-router = APIRouter(tags=["login"])
+router = APIRouter()
 
 @router.get("/")
 def login_access_token():

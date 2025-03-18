@@ -2,7 +2,7 @@ from typing import Any
 
 from fastapi import APIRouter
 
-router = APIRouter(prefix="/users", tags=["users"])
+router = APIRouter()
 
 @router.get("/")
 def read_users():
