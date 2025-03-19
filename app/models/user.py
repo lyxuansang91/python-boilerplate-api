@@ -1,10 +1,9 @@
 from enum import Enum
-from uuid import uuid4
 
-from core.database.mixins import TimestampMixin
-from . import Base
+from .timestamp import TimestampMixin
 from sqlalchemy import BigInteger, Boolean, Column, String
-from sqlalchemy.dialects.postgresql import UUID
+
+from . import Base
 
 
 class UserPermission(Enum):
@@ -14,12 +13,20 @@ class UserPermission(Enum):
     DELETE = "delete"
 
 
+class UserRole(Enum):
+    ADMIN = "admin"
+    USER = "user"
+
+
 class User(Base, TimestampMixin):
     __tablename__ = "users"
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
-    uuid = Column(UUID(as_uuid=True), default=uuid4, unique=True, nullable=False)
     email = Column(String(255), nullable=False, unique=True)
-    password = Column(String(255), nullable=False)
-    username = Column(String(255), nullable=False, unique=True)
-    is_admin = Column(Boolean, default=False)
+    hash_password = Column(String(255), nullable=False)
+    role = Column(String(50), nullable=False, default=UserRole.USER.value)
+    is_active = Column(Boolean, default=True)
+
+    @property
+    def user_role(self) -> UserRole:
+        return UserRole(self.role)
