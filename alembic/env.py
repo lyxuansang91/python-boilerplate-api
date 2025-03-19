@@ -1,12 +1,17 @@
 import os
+import sys
 from logging.config import fileConfig
 
 from alembic import context
+
+sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from sqlalchemy import engine_from_config, pool
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
+
+
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
@@ -18,20 +23,18 @@ fileConfig(config.config_file_name)
 # target_metadata = mymodel.Base.metadata
 # target_metadata = None
 
-from app.models import SQLModel  # noqa
-from app.core.config import settings # noqa
+from app.core.config import settings
+from app.models import Base
 
-target_metadata = SQLModel.metadata
+target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
 
-
 def get_url():
     return str(settings.SQLALCHEMY_DATABASE_URI)
-
 
 def run_migrations_offline():
     """Run migrations in 'offline' mode.
