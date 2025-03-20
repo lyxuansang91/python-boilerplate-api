@@ -2,5 +2,5 @@ from sqlalchemy.ext.declarative import as_declarative
 
 
 @as_declarative()
-class Base:
+class Base(object):
     pass

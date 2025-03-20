@@ -1,3 +1,4 @@
+from fastapi.security import HTTPBearer
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
@@ -8,16 +9,15 @@ from core.config import settings
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-
-ALGORITHM = "HS256"
+bearer_security = HTTPBearer()
 
 
 def create_token(
-    subject: str | Any, expires_delta: timedelta, token_type: str | Any = "access_token"
+    subject: str | Any, expires_delta: int, token_type: str | Any = "access_token"
 ) -> str:
-    expire = datetime.now(timezone.utc) + expires_delta
+    expire = datetime.now(timezone.utc) + timedelta(seconds=expires_delta)
     to_encode = {"exp": expire, "sub": str(subject), "type": token_type}
-    encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=ALGORITHM)
+    encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
     return encoded_jwt
 
 

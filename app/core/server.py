@@ -4,7 +4,7 @@ from fastapi.routing import APIRoute
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from api.routes.v1 import v1_router as router
+from api.routes import router as api_router
 from core.config import settings
 from core.exceptions import CustomException
 from core.fastapi.dependencies import Logging
@@ -13,7 +13,7 @@ from core.fastapi.middlewares import (
 )
 
 def init_routers(app_: FastAPI) -> None:
-    app_.include_router(router)
+    app_.include_router(api_router)
 
 
 def init_listeners(app_: FastAPI) -> None:

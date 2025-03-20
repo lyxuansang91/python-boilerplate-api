@@ -104,4 +104,17 @@ class BaseService(Generic[ModelType]):
         :return: The attributes.
         """
 
-        return schema.dict(exclude=excludes, exclude_unset=True)
+        return schema.model_dump(exclude=excludes, exclude_unset=True)
+
+    def update(self, model: ModelType, attributes: dict[str, Any]) -> ModelType:
+        """
+        Updates the Object in the DB.
+
+        :param
+        model: The model to update.
+        attributes: The attributes to update the object with.
+        :return: The updated object.
+        """
+        
+        update_object = self.repository.update(model, attributes)
+        return update_object

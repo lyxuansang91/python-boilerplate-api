@@ -2,10 +2,11 @@ from collections.abc import Generator
 from typing import Annotated
 
 import jwt
-from core import security
+from core.security import bearer_security
 from core.config import settings
 from core.db import engine
 from fastapi import Depends, HTTPException, status
+from fastapi.security import HTTPAuthorizationCredentials
 from jwt.exceptions import InvalidTokenError
 from models import User
 from pydantic import ValidationError
@@ -20,19 +21,27 @@ def get_db() -> Generator[Session, None, None]:
 
 SessionDep = Annotated[Session, Depends(get_db)]
 
-
-def get_user_repository(
-    session: Session = Depends(get_db),
-) -> Generator[UserRepository, None, None]:
-    return UserRepository(session)
+def get_user_repository(session: SessionDep) -> UserRepository:
+    return UserRepository(model=User, session=session)
 
 
-def get_current_user(session: SessionDep, token: str) -> User:
+def get_current_user(
+        token: Annotated[HTTPAuthorizationCredentials, Depends(bearer_security)],
+        user_repository: UserRepository = Depends(get_user_repository),
+        ) -> User:
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Could not validate credentials",
+        headers={"WWW-Authenticate": "Bearer"},
+    )
     try:
         payload = jwt.decode(
-            token, settings.SECRET_KEY, algorithms=[security.ALGORITHM]
+            token.credentials, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
         )
-        user = session.get(User, payload.get("sub"))
+        user_id: int = int(payload.get('sub'))
+        if user_id is None:
+            raise credentials_exception
+        user = user_repository.get_by_id(user_id)
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
         if not user.is_active:

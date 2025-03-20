@@ -28,6 +28,7 @@ class BaseRepository(Generic[ModelType]):
         model = self.model_class(**attributes)
         self.session.add(model)
         self.session.flush()
+        self.session.commit()
         return model
 
     def get_all(
@@ -236,3 +237,19 @@ class BaseRepository(Generic[ModelType]):
         :return: The query with the given join.
         """
         return getattr(self, "_join_" + join_)(query)
+
+    def update(self, model: ModelType, attributes: dict[str, Any]) -> ModelType:
+        """
+        Updates the model instance.
+
+        :param model: The model instance to update.
+        :param attributes: The attributes to update the model with.
+        :return: The updated model instance.
+        """
+        for key, value in attributes.items():
+            setattr(model, key, value)
+
+        self.session.add(model)
+        self.session.flush()
+        self.session.commit()
+        return model

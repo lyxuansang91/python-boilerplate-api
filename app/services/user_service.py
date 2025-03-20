@@ -1,3 +1,5 @@
+from typing import Any
+from core.security import get_password_hash
 from models import User
 from repositories import UserRepository
 
@@ -17,3 +19,9 @@ class UserService(BaseService[User]):
 
     def authenticate(self, email: str, password: str) -> User:
         return self.user_repository.authenticate(email, password)
+
+    def update_user(self, user: User, updated_info: dict[Any, str]) -> User:
+        password = updated_info.get("password")
+        if password:
+            updated_info["hash_password"] = get_password_hash(password)
+        return self.user_repository.update(user, updated_info)

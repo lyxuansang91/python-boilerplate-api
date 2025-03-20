@@ -37,7 +37,7 @@ class AuthService(BaseService[User]):
         if not user:
             raise BadRequestException("Invalid credentials")
 
-        if not security.verify_password(user.password, password):
+        if not security.verify_password(password, user.hash_password):
             raise BadRequestException("Invalid credentials")
 
         return Token(
