@@ -18,4 +18,6 @@ COPY ./alembic.ini /app/
 
 COPY ./app /app/app
 
+COPY ./alembic /app/
+
 CMD ["python", "app/main.py"]
