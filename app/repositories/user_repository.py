@@ -1,13 +1,14 @@
-from typing import Optional
-from models import User
-from .base_repository import BaseRepository
 from core import security
-class UserRepository(BaseRepository[User]):
+from models import User
 
+from .base_repository import BaseRepository
+
+
+class UserRepository(BaseRepository[User]):
     def __init__(self, session):
         super().__init__(model=User, session=session)
 
-    def authenticate(self, email: str, password: str) -> Optional[User]:
+    def authenticate(self, email: str, password: str) -> User | None:
         user = self.session.query(User).filter(User.email == email).first()
         if not user:
             return None
@@ -15,10 +16,13 @@ class UserRepository(BaseRepository[User]):
             return None
         return user
 
-    def get_by_email(self, email: str) -> Optional[User]:
+    def get_by_email(self, email: str) -> User | None:
         return self.session.query(User).filter(User.email == email).first()
 
-    def get_by_id(self, user_id: int) -> Optional[User]:
+    def get_by_username(self, username: str) -> User | None:
+        return self.session.query(User).filter(User.username == username).first()
+
+    def get_by_id(self, user_id: int) -> User | None:
         return self.session.query(User).filter(User.id == user_id).first()
 
     def create(self, user: User) -> User:

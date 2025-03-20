@@ -14,9 +14,9 @@ ModelType = TypeVar("ModelType", bound=Base)
 class BaseRepository(Generic[ModelType]):
     """Base class for data repositories."""
 
-    def __init__(self, model: Type[ModelType], session: Session):
+    def __init__(self, model: type[ModelType], session: Session):
         self.session = session
-        self.model_class: Type[ModelType] = model
+        self.model_class: type[ModelType] = model
 
     def create(self, attributes: dict[str, Any] = None) -> ModelType:
         """
@@ -29,6 +29,7 @@ class BaseRepository(Generic[ModelType]):
             attributes = {}
         model = self.model_class(**attributes)
         self.session.add(model)
+        self.session.flush()
         return model
 
     def get_all(
@@ -47,7 +48,7 @@ class BaseRepository(Generic[ModelType]):
 
         if join_ is not None:
             return self.all_unique(query)
-            
+
         return self._all(query)
 
     def get_by(
@@ -156,7 +157,7 @@ class BaseRepository(Generic[ModelType]):
         query: Select,
         sort_by: str,
         order: str | None = "asc",
-        model: Type[ModelType] | None = None,
+        model: type[ModelType] | None = None,
         case_insensitive: bool = False,
     ) -> Select:
         """

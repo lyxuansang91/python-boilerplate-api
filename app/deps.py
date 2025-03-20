@@ -10,7 +10,7 @@ from jwt.exceptions import InvalidTokenError
 from models import User
 from pydantic import ValidationError
 from repositories import UserRepository
-from sqlmodel import Session
+from sqlalchemy.orm import Session
 
 
 def get_db() -> Generator[Session, None, None]:
