@@ -1,9 +1,9 @@
 from enum import Enum
 
-from .timestamp import TimestampMixin
 from sqlalchemy import BigInteger, Boolean, Column, String
 
 from . import Base
+from .timestamp import TimestampMixin
 
 
 class UserPermission(Enum):

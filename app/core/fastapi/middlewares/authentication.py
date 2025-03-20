@@ -1,5 +1,5 @@
-from core.config import settings
 import jwt
+from core.config import settings
 from schemas.extras.current_user import CurrentUser
 from starlette.authentication import AuthenticationBackend
 from starlette.middleware.authentication import (
