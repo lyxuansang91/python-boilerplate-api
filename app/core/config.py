@@ -1,5 +1,5 @@
 import secrets
-from typing import Annotated, Any, Literal
+from typing import Any, Literal
 
 from pydantic import (
     PostgresDsn,

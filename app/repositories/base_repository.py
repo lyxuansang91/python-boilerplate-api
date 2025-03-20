@@ -1,12 +1,10 @@
 from functools import reduce
-from typing import Any, Generic, Type, TypeVar
+from typing import Any, Generic, TypeVar
 
+from models import Base
 from sqlalchemy import Select, func
 from sqlalchemy.orm import Session
 from sqlalchemy.sql.expression import select
-
-from models import Base
-
 
 ModelType = TypeVar("ModelType", bound=Base)
 

@@ -1,2 +1,4 @@
 from .token import TokenResponse
-__all__ = ["Token"]
+from .user import UserResponse
+
+__all__ = ["UserResponse", "TokenResponse"]

@@ -1,6 +1,7 @@
 from functools import partial
 
-from deps import SessionDep
+from deps import get_db
+from fastapi import Depends
 from models import User
 from repositories import UserRepository
 from services import AuthService, UserService
@@ -15,8 +16,8 @@ class Factory:
     # Repositories
     user_repository = partial(UserRepository, User)
 
-    def get_user_service(self, session=SessionDep):
-        return UserService(user_repository=self.user_repository(session=session))
+    def get_user_service(self, session=Depends(get_db)):
+        return UserService(user_repository=Factory.user_repository(session=session))
 
-    def get_auth_service(self, session=SessionDep):
-        return AuthService(user_repository=self.user_repository(session=session))
+    def get_auth_service(self, session=Depends(get_db)):
+        return AuthService(user_repository=Factory.user_repository(session=session))

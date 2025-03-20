@@ -15,18 +15,12 @@ class AuthService(BaseService[User]):
         super().__init__(model=User, repository=user_repository)
         self.user_repository = user_repository
 
-    def register(self, email: EmailStr, password: str, username: str) -> User:
+    def register(self, email: EmailStr, password: str) -> User:
         # Check if user exists with email
         user = self.user_repository.get_by_email(email)
 
         if user:
             raise BadRequestException("User already exists with this email")
-
-        # Check if user exists with username
-        user = self.user_repository.get_by_username(username)
-
-        if user:
-            raise BadRequestException("User already exists with this username")
 
         hash_password = security.get_password_hash(password=password)
 
@@ -34,7 +28,6 @@ class AuthService(BaseService[User]):
             {
                 "email": email,
                 "hash_password": hash_password,
-                "username": username,
             }
         )
 

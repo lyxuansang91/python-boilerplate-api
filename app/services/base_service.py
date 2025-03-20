@@ -25,9 +25,7 @@ class BaseService(Generic[ModelType]):
         :return: The model instance.
         """
 
-        db_obj = await self.repository.get_by(
-            field="id", value=id_, join_=join_, unique=True
-        )
+        db_obj = self.repository.get_by(field="id", value=id_, join_=join_, unique=True)
         if not db_obj:
             raise NotFoundException(
                 f"{self.model_class.__tablename__.title()} with id: {id} does not exist"
@@ -44,7 +42,7 @@ class BaseService(Generic[ModelType]):
         :return: The model instance.
         """
 
-        db_obj = await self.repository.get_by(
+        db_obj = self.repository.get_by(
             field="uuid", value=uuid, join_=join_, unique=True
         )
         if not db_obj:
@@ -106,4 +104,4 @@ class BaseService(Generic[ModelType]):
         :return: The attributes.
         """
 
-        return await schema.dict(exclude=excludes, exclude_unset=True)
+        return schema.dict(exclude=excludes, exclude_unset=True)
