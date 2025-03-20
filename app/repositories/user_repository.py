@@ -5,6 +5,7 @@ from .base_repository import BaseRepository
 
 
 class UserRepository(BaseRepository[User]):
+
     def authenticate(self, email: str, password: str) -> User | None:
         user = self.session.query(User).filter(User.email == email).first()
         if not user:
@@ -15,9 +16,6 @@ class UserRepository(BaseRepository[User]):
 
     def get_by_email(self, email: str) -> User | None:
         return self.session.query(User).filter(User.email == email).first()
-
-    def get_by_username(self, username: str) -> User | None:
-        return self.session.query(User).filter(User.username == username).first()
 
     def get_by_id(self, user_id: int) -> User | None:
         return self.session.query(User).filter(User.id == user_id).first()
