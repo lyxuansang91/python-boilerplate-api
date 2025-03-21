@@ -116,7 +116,7 @@ class BaseRepository(Generic[ModelType]):
         result = self.session.execute(query)
         return result.unique().scalars().all()
 
-    async def _first(self, query: Select) -> ModelType | None:
+    def _first(self, query: Select) -> ModelType | None:
         """
         Returns the first result from the query.
 
@@ -126,32 +126,32 @@ class BaseRepository(Generic[ModelType]):
         query = self.session.scalars(query)
         return query.first()
 
-    async def _one_or_none(self, query: Select) -> ModelType | None:
+    def _one_or_none(self, query: Select) -> ModelType | None:
         """Returns the first result from the query or None."""
         query = self.session.scalars(query)
         return query.one_or_none()
 
-    async def _one(self, query: Select) -> ModelType:
+    def _one(self, query: Select) -> ModelType:
         """
         Returns the first result from the query or raises NoResultFound.
 
         :param query: The query to execute.
         :return: The first model instance.
         """
-        query = await self.session.scalars(query)
+        query = self.session.scalars(query)
         return query.one()
 
-    async def _count(self, query: Select) -> int:
+    def _count(self, query: Select) -> int:
         """
         Returns the count of the records.
 
         :param query: The query to execute.
         """
         query = query.subquery()
-        query = await self.session.scalars(select(func.count()).select_from(query))
+        query = self.session.scalars(select(func.count()).select_from(query))
         return query.one()
 
-    async def _sort_by(
+    def _sort_by(
         self,
         query: Select,
         sort_by: str,
@@ -183,7 +183,7 @@ class BaseRepository(Generic[ModelType]):
 
         return query.order_by(order_column.asc())
 
-    async def _get_by(self, query: Select, field: str, value: Any) -> Select:
+    def _get_by(self, query: Select, field: str, value: Any) -> Select:
         """
         Returns the query filtered by the given column.
 
