@@ -19,3 +19,12 @@ class UserRepository(BaseRepository[User]):
 
     def get_by_id(self, user_id: int) -> User | None:
         return self.session.query(User).filter(User.id == user_id).first()
+
+    def create_user(self, user_data: dict) -> User:
+        user_data["hash_password"] = security.get_password_hash(user_data["password"])
+        del user_data["password"]
+        return self.create(user_data)
+    
+    def get_users(self, search: str | None, skip: int = 0, limit: int = 10):
+        count_users = self._count(self._query(join_= None))
+        users = self.get_all(skip=skip, limit=limit)

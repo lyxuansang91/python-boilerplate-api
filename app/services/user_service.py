@@ -25,3 +25,19 @@ class UserService(BaseService[User]):
         if password:
             updated_info["hash_password"] = get_password_hash(password)
         return self.user_repository.update(user, updated_info)
+
+    def create_user(self, user_data: dict[Any, str]) -> User:
+        user_data["hash_password"] = get_password_hash(user_data["password"])
+        del user_data["password"]
+        return self.user_repository.create(user_data)
+    
+    def get_users(self, search: str| None, skip: int = 0, limit: int = 10)-> tuple[list[User], int]:
+        query = self.user_repository._query()
+        
+        if search:
+            search_filter= "%{}%".format(search)
+            query = query.filter(User.email.ilike(search_filter))
+        count = self.user_repository._count(query=query)
+        users = self.user_repository._all(query.offset(skip).limit(limit))
+
+        return users, count

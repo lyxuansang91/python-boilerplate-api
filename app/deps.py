@@ -8,7 +8,7 @@ from core.db import engine
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials
 from jwt.exceptions import InvalidTokenError
-from models import User
+from models import UserRole, User
 from pydantic import ValidationError
 from repositories import UserRepository
 from sqlalchemy.orm import Session
@@ -57,8 +57,8 @@ def get_current_user(
 CurrentUser = Annotated[User, Depends(get_current_user)]
 
 
-def get_current_active_superuser(current_user: CurrentUser) -> User:
-    if not current_user.is_superuser:
+def get_current_active_admin(current_user: CurrentUser) -> User:
+    if current_user.role != UserRole.ADMIN.value:
         raise HTTPException(
             status_code=403, detail="The user doesn't have enough privileges"
         )

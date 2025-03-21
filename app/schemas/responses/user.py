@@ -9,3 +9,6 @@ class UserResponse(BaseModel):
     is_active: bool | None
     created_at: datetime | None
     updated_at: datetime | None
+
+    class Config:
+        from_attributes = True
