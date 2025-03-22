@@ -16,10 +16,9 @@ from app.tests.utils.utils import get_superuser_token_headers
 def db() -> Generator[Session, None, None]:
     with Session(engine) as session:
         yield session
-        statement = delete(Item)
-        session.execute(statement)
+        
         statement = delete(User)
-        session.execute(statement)
+        session.exec(statement)
         session.commit()
 
 

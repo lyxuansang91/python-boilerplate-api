@@ -33,6 +33,9 @@ package-mode = false
 poetry-plugin-export = ">=1.8"
 
 
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.5"
+
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
