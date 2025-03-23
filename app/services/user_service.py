@@ -48,7 +48,7 @@ class UserService(BaseService[User]):
         subject = "Password Reset Request"
         reset_url = f"https://yourdomain.com/reset-password?token={reset_token}"
         body = f"""
-        Hi {user.username},
+        Hi {user.email},
 
         You requested to reset your password. Click the link below to reset it:
         {reset_url}
@@ -60,8 +60,7 @@ class UserService(BaseService[User]):
         """
         send_email(to=user.email, subject=subject, body=body)
 
-    def trigger_password_reset(self, email: str) -> None:
-        user = self.get_by_email(email)
+    def trigger_password_reset(self, user: User) -> None:
         reset_token = self.user_repository.create_reset_token(user)
         self.send_forgot_password_email(user, reset_token)
 
