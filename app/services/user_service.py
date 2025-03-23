@@ -1,9 +1,10 @@
 from typing import Any
-from core.security import get_password_hash
+from core.security import get_password_hash, get_sub_from_token
 from models import User
 from repositories import UserRepository
 
 from services import BaseService
+from core.email import send_email
 
 
 class UserService(BaseService[User]):
@@ -41,3 +42,36 @@ class UserService(BaseService[User]):
         users = self.user_repository._all(query.offset(skip).limit(limit))
 
         return users, count
+    
+    def send_forgot_password_email(self, user: User, reset_token: str) -> None:
+
+        subject = "Password Reset Request"
+        reset_url = f"https://yourdomain.com/reset-password?token={reset_token}"
+        body = f"""
+        Hi {user.username},
+
+        You requested to reset your password. Click the link below to reset it:
+        {reset_url}
+
+        If you did not request this, please ignore this email.
+
+        Thanks,
+        Your Team
+        """
+        send_email(to=user.email, subject=subject, body=body)
+
+    def trigger_password_reset(self, email: str) -> None:
+        user = self.get_by_email(email)
+        reset_token = self.user_repository.create_reset_token(user)
+        self.send_forgot_password_email(user, reset_token)
+
+    def send_email(self, email: str, subject: str, body: str) -> None:
+        # Send email using an email service
+        send_email(to=email, subject=subject, body=body)
+
+    def reset_password(self, token: str, new_password: str) -> None:
+        sub = get_sub_from_token(token)
+        user = self.user_repository.get_by_id(int(sub))
+        if not user:
+            raise Exception("Invalid token")
+        self.update_user(user, {'password': new_password})

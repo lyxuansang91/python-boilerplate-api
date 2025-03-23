@@ -73,3 +73,49 @@ def create_user(
     )
 
     return new_user
+
+@router.post("/forgot-password", status_code=status.HTTP_200_OK)
+def forgot_password(
+    email: str = Query(..., description="The email of the user requesting password reset"),
+    user_service: UserService = Depends(Factory().get_user_service),
+) -> dict:
+    """
+    Handle forgot password requests.
+
+    Parameters:
+    - email: The email of the user requesting a password reset.
+
+    Returns:
+    - A message indicating the password reset process has started.
+    """
+    # Check if the user exists
+    user = user_service.get_by_email(email)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="User with this email does not exist.",
+        )
+
+    # Trigger password reset process (e.g., send email with reset link)
+    user_service.trigger_password_reset(user)
+    return {"message": "Password reset instructions have been sent to your email."}
+
+@router.post('/reset-password', status_code=status.HTTP_200_OK)
+def reset_password(
+    token: str = Query(..., description="The password reset token"),
+    new_password: str = Query(..., description="The new password"),
+    user_service: UserService = Depends(Factory().get_user_service),
+) -> dict:
+    """
+    Handle password reset requests.
+
+    Parameters:
+    - token: The password reset token.
+    - new_password: The new password.
+
+    Returns:
+    - A message indicating the password has been reset.
+    """
+    # Reset the password
+    user = user_service.reset_password(token, new_password)
+    return {"message": "Password has been reset."}
