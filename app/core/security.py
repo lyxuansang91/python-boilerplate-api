@@ -27,3 +27,18 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
+
+
+def create_reset_token(user_id: int) -> str:
+    return create_token(subject=user_id, expires_delta=settings.RESET_TOKEN_EXPIRE_MINUTES, token_type="reset")
+
+def get_sub_from_token(token: str) -> Any:
+    try:
+        payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
+        return payload["sub"]
+    except jwt.ExpiredSignatureError:
+        return "Signature has expired"
+    except jwt.InvalidTokenError:
+        return "Invalid token"
+    except Exception:
+        return "Invalid token"
