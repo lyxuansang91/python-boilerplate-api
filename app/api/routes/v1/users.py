@@ -97,7 +97,7 @@ def forgot_password(
             detail="User with this email does not exist.",
         )
 
-    # Trigger password reset process (e.g., send email with reset link)
+    # Trigger password reset process (e.g., send email with reset link), temporary solution
     background_tasks.add_task(user_service.trigger_password_reset, user)
     return {"message": "Password reset instructions have been sent to your email."}
 
