@@ -18,3 +18,4 @@ COPY ./app /app/app
 COPY ./alembic /app/alembic
 
 CMD ["bash", "scripts/entrypoint.sh"]
+EXPOSE 8000
