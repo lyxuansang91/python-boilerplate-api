@@ -1,16 +1,10 @@
-
-from fastapi import APIRouter, Depends, HTTPException, status, Query
-
 from deps import get_current_active_admin
-
-from services import UserService
 from factory import Factory
-
-from schemas.requests import CreateUserRequest
-from schemas.responses import UserResponse, PaginatedResponse
-
+from fastapi import APIRouter, Depends, HTTPException, Query, status, BackgroundTasks
 from models import User
-
+from schemas.requests import CreateUserRequest
+from schemas.responses import PaginatedResponse, UserResponse
+from services import UserService
 
 router = APIRouter()
 
@@ -20,7 +14,7 @@ def list_users(
     search: str | None = Query(None, description="Search term for email or full name"),
     page: int = Query(1, ge=1, description="Number of items to page"),
     limit: int = Query(10, ge=1, le=100, description="Number of items to return"),
-    current_user: User = Depends(get_current_active_admin), # No default value
+    current_user: User = Depends(get_current_active_admin),  # No default value
     user_service: UserService = Depends(Factory().get_user_service),
 ) -> PaginatedResponse[UserResponse]:
     """
@@ -29,7 +23,9 @@ def list_users(
     Returns:
     list: A list of dictionaries, each containing the username of a user.
     """
-    users, total = user_service.get_users(search=search, skip=limit * (page - 1), limit=limit)
+    users, total = user_service.get_users(
+        search=search, skip=limit * (page - 1), limit=limit
+    )
     return PaginatedResponse[UserResponse](
         items=users,
         total=total,
@@ -39,10 +35,11 @@ def list_users(
         pages=total // limit if total % limit == 0 else total // limit + 1,
     )
 
+
 @router.post("", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 def create_user(
     create_request: CreateUserRequest,
-    current_user: User = Depends(get_current_active_admin), # No default value
+    current_user: User = Depends(get_current_active_admin),  # No default value
     user_service: UserService = Depends(Factory().get_user_service),
 ) -> UserResponse:
     """
@@ -66,7 +63,7 @@ def create_user(
     # Create the new user
     new_user = user_service.create_user(
         {
-            "email": create_request.email, 
+            "email": create_request.email,
             "password": create_request.password,
             "role": create_request.role,
         }
@@ -74,10 +71,14 @@ def create_user(
 
     return new_user
 
+
 @router.post("/forgot-password", status_code=status.HTTP_200_OK)
 def forgot_password(
-    email: str = Query(..., description="The email of the user requesting password reset"),
+    email: str = Query(
+        ..., description="The email of the user requesting password reset"
+    ),
     user_service: UserService = Depends(Factory().get_user_service),
+    background_tasks: BackgroundTasks = BackgroundTasks(),  # Moved to the end
 ) -> dict:
     """
     Handle forgot password requests.
@@ -96,11 +97,12 @@ def forgot_password(
             detail="User with this email does not exist.",
         )
 
-    # Trigger password reset process (e.g., send email with reset link)
-    user_service.trigger_password_reset(user)
+    # Trigger password reset process (e.g., send email with reset link), temporary solution
+    background_tasks.add_task(user_service.trigger_password_reset, user)
     return {"message": "Password reset instructions have been sent to your email."}
 
-@router.post('/reset-password', status_code=status.HTTP_200_OK)
+
+@router.post("/reset-password", status_code=status.HTTP_200_OK)
 def reset_password(
     token: str = Query(..., description="The password reset token"),
     new_password: str = Query(..., description="The new password"),
@@ -117,5 +119,5 @@ def reset_password(
     - A message indicating the password has been reset.
     """
     # Reset the password
-    user = user_service.reset_password(token, new_password)
+    user_service.reset_password(token, new_password)
     return {"message": "Password has been reset."}

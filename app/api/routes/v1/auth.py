@@ -1,14 +1,11 @@
+# from core.security import get_password_hash
+from deps import get_current_user
 from factory import Factory
-from core.security import get_password_hash
 from fastapi import APIRouter, Depends, status
+from models import User
 from schemas.requests import LoginRequest, RegisterRequest, UpdateUserRequest
 from schemas.responses import TokenResponse, UserResponse
 from services import AuthService, UserService
-
-from deps import get_current_user
-
-from schemas.responses import UserResponse
-from models import User
 
 router = APIRouter()
 
@@ -49,6 +46,7 @@ async def register_with_email(
         updated_at=user.updated_at,
     )
 
+
 @router.get("/me", response_model=UserResponse)
 def get_user_profile(
     current_user: User = Depends(get_current_user),
@@ -57,7 +55,7 @@ def get_user_profile(
     Retrieve the profile of the currently authenticated user.
 
     Parameters:
-    current_user (User): The user object of the currently authenticated user, 
+    current_user (User): The user object of the currently authenticated user,
                          obtained through dependency injection.
 
     Returns:
@@ -65,11 +63,12 @@ def get_user_profile(
     """
     return current_user
 
+
 @router.put("/me", response_model=UserResponse)
 async def update_user_profile(
     update_request: UpdateUserRequest,
     current_user: User = Depends(get_current_user),
-    user_service: UserService = Depends(Factory().get_user_service)
+    user_service: UserService = Depends(Factory().get_user_service),
 ) -> UserResponse:
     """
     Update the profile of the currently authenticated user.
@@ -84,5 +83,5 @@ async def update_user_profile(
     """
     update_dict = update_request.model_dump(exclude_unset=True)
     updated_user = user_service.update_user(current_user, update_dict)
-        
+
     return updated_user
