@@ -26,7 +26,7 @@ def get_user_repository(session: SessionDep) -> UserRepository:
 
 
 def get_current_user(
-        token: Annotated[HTTPAuthorizationCredentials, Depends(bearer_security)],
+        token: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer_security)],
         user_repository: UserRepository = Depends(get_user_repository),
         ) -> User:
     credentials_exception = HTTPException(
@@ -34,6 +34,10 @@ def get_current_user(
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
+    
+    if not token or not token.credentials:
+        raise credentials_exception
+        
     try:
         payload = jwt.decode(
             token.credentials, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
@@ -48,10 +52,7 @@ def get_current_user(
             raise HTTPException(status_code=400, detail="Inactive user")
         return user
     except (InvalidTokenError, ValidationError):
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Could not validate credentials",
-        )
+        raise credentials_exception
 
 
 CurrentUser = Annotated[User, Depends(get_current_user)]

@@ -9,7 +9,7 @@ from core.config import settings
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-bearer_security = HTTPBearer()
+bearer_security = HTTPBearer(auto_error=False)
 
 
 def create_token(
