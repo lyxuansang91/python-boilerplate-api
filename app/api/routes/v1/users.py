@@ -2,7 +2,7 @@ from deps import get_current_active_admin
 from factory import Factory
 from fastapi import APIRouter, Depends, HTTPException, Query, status, BackgroundTasks
 from models import User
-from schemas.requests import CreateUserRequest
+from schemas.requests import CreateUserRequest, ForgotPasswordRequest
 from schemas.responses import PaginatedResponse, UserResponse
 from services import UserService
 
@@ -74,23 +74,21 @@ def create_user(
 
 @router.post("/forgot-password", status_code=status.HTTP_200_OK)
 def forgot_password(
-    email: str = Query(
-        ..., description="The email of the user requesting password reset"
-    ),
+    request: ForgotPasswordRequest,
     user_service: UserService = Depends(Factory().get_user_service),
-    background_tasks: BackgroundTasks = BackgroundTasks(),  # Moved to the end
+    background_tasks: BackgroundTasks = BackgroundTasks(),
 ) -> dict:
     """
     Handle forgot password requests.
 
     Parameters:
-    - email: The email of the user requesting a password reset.
+    - request: The request containing the email of the user requesting a password reset.
 
     Returns:
     - A message indicating the password reset process has started.
     """
     # Check if the user exists
-    user = user_service.get_by_email(email)
+    user = user_service.get_by_email(request.email)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
