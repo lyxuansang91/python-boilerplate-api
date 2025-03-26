@@ -2,6 +2,7 @@ from typing import Any
 
 from core.email import send_email
 from core.security import get_password_hash, get_sub_from_token
+from core.config import settings
 from models import User
 from repositories import UserRepository
 
@@ -48,7 +49,7 @@ class UserService(BaseService[User]):
 
     def send_forgot_password_email(self, user: User, reset_token: str) -> None:
         subject = "Password Reset Request"
-        reset_url = f"https://yourdomain.com/reset-password?token={reset_token}"
+        reset_url = f"https://{settings.FRONT_END_URL}/reset-password?token={reset_token}"
         body = f"""
         Hi {user.email},
 
