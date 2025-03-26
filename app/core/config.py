@@ -43,6 +43,7 @@ class Settings(BaseSettings):
     SMTP_ACCESS_KEY: str = ""
     SMTP_SECRET_KEY: str = ""
     SMTP_SENDER: str = "noreply@yourdomain.com"
+    FRONT_END_URL: str ="https://dev.stock.picontechnology.com"
 
     model_config = SettingsConfigDict(env_file=".env")
 
