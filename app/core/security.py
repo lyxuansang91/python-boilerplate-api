@@ -45,9 +45,5 @@ def get_sub_from_token(token: str) -> Any:
             token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
         )
         return payload["sub"]
-    except jwt.ExpiredSignatureError:
-        return "Signature has expired"
-    except jwt.InvalidTokenError:
-        return "Invalid token"
-    except Exception:
-        return "Invalid token"
+    except (jwt.ExpiredSignatureError, jwt.InvalidTokenError, Exception):
+        return None

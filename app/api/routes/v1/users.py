@@ -1,8 +1,8 @@
-from deps import get_current_active_admin
+from deps import get_current_active_admin, get_current_user
 from factory import Factory
 from fastapi import APIRouter, Depends, HTTPException, Query, status, BackgroundTasks
 from models import User
-from schemas.requests import CreateUserRequest, ForgotPasswordRequest
+from schemas.requests import CreateUserRequest, ForgotPasswordRequest, ResetPasswordRequest, VerifyResetTokenRequest
 from schemas.responses import PaginatedResponse, UserResponse
 from services import UserService
 
@@ -102,8 +102,8 @@ def forgot_password(
 
 @router.post("/reset-password", status_code=status.HTTP_200_OK)
 def reset_password(
-    token: str = Query(..., description="The password reset token"),
-    new_password: str = Query(..., description="The new password"),
+    request: ResetPasswordRequest,
+    # current_user: User = Depends(get_current_user),
     user_service: UserService = Depends(Factory().get_user_service),
 ) -> dict:
     """
@@ -117,5 +117,21 @@ def reset_password(
     - A message indicating the password has been reset.
     """
     # Reset the password
-    user_service.reset_password(token, new_password)
-    return {"message": "Password has been reset."}
+    try:
+    
+        user_service.reset_password(request.token, request.new_password)
+        return {"message": "Password has been reset."}
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        )
+
+
+@router.post("/verify-reset-token", status_code=status.HTTP_200_OK)
+def verify_reset_token(
+    request: VerifyResetTokenRequest,
+    user_service: UserService = Depends(Factory().get_user_service),
+) -> dict:
+    is_verifed = user_service.verify_reset_token(request.token)
+    return {"is_verified": is_verifed}

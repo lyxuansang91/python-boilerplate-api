@@ -3,7 +3,7 @@ from deps import get_current_user
 from factory import Factory
 from fastapi import APIRouter, Depends, status
 from models import User
-from schemas.requests import LoginRequest, RegisterRequest, UpdateUserRequest
+from schemas.requests import LoginRequest, RegisterRequest, UpdateUserRequest, ChangePasswordRequest
 from schemas.responses import TokenResponse, UserResponse
 from services import AuthService, UserService
 from pydantic import EmailStr, ValidationError
@@ -94,3 +94,18 @@ async def update_user_profile(
     updated_user = user_service.update_user(current_user, update_dict)
 
     return updated_user
+
+@router.post("/change-password", status_code=status.HTTP_200_OK)
+async def change_password(
+    change_password_request: ChangePasswordRequest,
+    current_user: User = Depends(get_current_user),
+    user_service: UserService = Depends(Factory().get_user_service),
+) -> dict:
+    try:
+        user_service.update_password(current_user, change_password_request.old_password, change_password_request.new_password)
+        return {"message": "Password changed successfully"}
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        )
