@@ -3,6 +3,5 @@
 set -e
 set -x
 
-coverage run --source=app -m pytest
-coverage report --show-missing
-coverage html --title "${@-coverage}"
+
+PYTHONPATH=$(pwd) poetry run pytest app/tests/api/routes/

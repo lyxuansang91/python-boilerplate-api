@@ -1,14 +1,13 @@
 from datetime import datetime
 
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr, ConfigDict
 
 
 class UserResponse(BaseModel):
     id: int | None
-    email: str
+    email: EmailStr
     is_active: bool | None
     created_at: datetime | None
     updated_at: datetime | None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)

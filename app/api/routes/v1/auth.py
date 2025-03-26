@@ -6,6 +6,8 @@ from models import User
 from schemas.requests import LoginRequest, RegisterRequest, UpdateUserRequest
 from schemas.responses import TokenResponse, UserResponse
 from services import AuthService, UserService
+from pydantic import EmailStr, ValidationError
+from fastapi import HTTPException
 
 router = APIRouter()
 
@@ -33,8 +35,15 @@ async def register_with_email(
     login_request: RegisterRequest,
     auth_service: AuthService = Depends(Factory().get_auth_service),
 ) -> UserResponse:
+    try:
+        email = login_request.email
+    except ValidationError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid email format"
+        )
+
     user = auth_service.register(
-        email=login_request.email,
+        email=email,
         password=login_request.password,
     )
 

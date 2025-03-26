@@ -1,4 +1,4 @@
-from pydantic import Field
+from pydantic import Field, ConfigDict
 from sqlmodel import SQLModel
 from starlette.datastructures import Headers
 from starlette.types import ASGIApp, Message, Receive, Scope, Send
@@ -9,8 +9,7 @@ class ResponseInfo(SQLModel):
     body: str = Field(default="", title="Response body")
     status_code: int | None = Field(default=None, title="Status code")
 
-    class Config:
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(arbitrary_types_allowed=True)
 
 
 class ResponseLoggerMiddleware:

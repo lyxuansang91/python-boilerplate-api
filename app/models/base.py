@@ -1,4 +1,4 @@
-from sqlalchemy.ext.declarative import as_declarative
+from sqlalchemy.orm import as_declarative
 
 
 @as_declarative()

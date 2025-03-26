@@ -1,41 +1,48 @@
-from collections.abc import Generator
-
 import pytest
+import os
+import sys
 from fastapi.testclient import TestClient
-from sqlmodel import Session, delete
-
-from app.core.config import settings
-from app.core.db import engine
+from sqlmodel import Session, create_engine
 from app.main import app
-from app.models import Item, User
-from app.tests.utils.user import authentication_token_from_email
-from app.tests.utils.utils import get_superuser_token_headers
+from app.core.db import get_session
+from app.models import Base
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+POSTGRES_SERVER = os.getenv("POSTGRES_SERVER", "localhost")
+POSTGRES_PORT = os.getenv("POSTGRES_PORT", "5432")
+POSTGRES_USER = os.getenv("POSTGRES_USER", "postgres")
+POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD", "")
+POSTGRES_DB = "stockbot_test"
+
+DATABASE_URL = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_SERVER}:{POSTGRES_PORT}/{POSTGRES_DB}"
+
+engine = create_engine(DATABASE_URL, echo=True)
 
 
 @pytest.fixture(scope="session", autouse=True)
-def db() -> Generator[Session, None, None]:
+def setup_test_db():
+    Base.metadata.create_all(engine)
+    yield
+    Base.metadata.drop_all(engine)
+
+
+@pytest.fixture(scope="function")
+def db_session():
+    """Mở session database test (reset sau mỗi test)."""
     with Session(engine) as session:
         yield session
-        statement = delete(Item)
-        session.execute(statement)
-        statement = delete(User)
-        session.execute(statement)
-        session.commit()
+        session.rollback()
 
 
-@pytest.fixture(scope="module")
-def client() -> Generator[TestClient, None, None]:
+@pytest.fixture(scope="function")
+def client(db_session: Session):
+    """Client test với database test."""
+
+    def override_get_session():
+        return db_session
+
+    app.dependency_overrides[get_session] = override_get_session
     with TestClient(app) as c:
         yield c
-
-
-@pytest.fixture(scope="module")
-def superuser_token_headers(client: TestClient) -> dict[str, str]:
-    return get_superuser_token_headers(client)
-
-
-@pytest.fixture(scope="module")
-def normal_user_token_headers(client: TestClient, db: Session) -> dict[str, str]:
-    return authentication_token_from_email(
-        client=client, email=settings.EMAIL_TEST_USER, db=db
-    )
+    app.dependency_overrides.clear()
