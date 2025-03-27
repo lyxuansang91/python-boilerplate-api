@@ -1,10 +1,10 @@
-from deps import get_current_active_admin, get_current_user
-from factory import Factory
+from app.deps import get_current_active_admin, get_current_user
+from app.factory import Factory
 from fastapi import APIRouter, Depends, HTTPException, Query, status, BackgroundTasks
-from models import User
-from schemas.requests import CreateUserRequest, ForgotPasswordRequest, ResetPasswordRequest, VerifyResetTokenRequest
-from schemas.responses import PaginatedResponse, UserResponse
-from services import UserService
+from app.models import User
+from app.schemas.requests import CreateUserRequest, ForgotPasswordRequest, ResetPasswordRequest, VerifyResetTokenRequest
+from app.schemas.responses import PaginatedResponse, UserResponse
+from app.services import UserService
 
 router = APIRouter()
 

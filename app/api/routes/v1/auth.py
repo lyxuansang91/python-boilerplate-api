@@ -1,11 +1,11 @@
 # from core.security import get_password_hash
-from deps import get_current_user
-from factory import Factory
+from app.deps import get_current_user
+from app.factory import Factory
 from fastapi import APIRouter, Depends, status
-from models import User
-from schemas.requests import LoginRequest, RegisterRequest, UpdateUserRequest, ChangePasswordRequest
-from schemas.responses import TokenResponse, UserResponse
-from services import AuthService, UserService
+from app.models import User
+from app.schemas.requests import LoginRequest, RegisterRequest, UpdateUserRequest, ChangePasswordRequest
+from app.schemas.responses import TokenResponse, UserResponse
+from app.services import AuthService, UserService
 from pydantic import EmailStr, ValidationError
 from fastapi import HTTPException
 

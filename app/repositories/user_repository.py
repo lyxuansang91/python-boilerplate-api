@@ -1,5 +1,5 @@
-from core import security
-from models import User
+from app.core import security
+from app.models import User
 
 from .base_repository import BaseRepository
 

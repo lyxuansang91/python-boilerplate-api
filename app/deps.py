@@ -2,15 +2,15 @@ from collections.abc import Generator
 from typing import Annotated
 
 import jwt
-from core.security import bearer_security
-from core.config import settings
-from core.db import engine
+from app.core.security import bearer_security
+from app.core.config import settings
+from app.repositories import UserRepository
+from app.core.db import engine
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials
 from jwt.exceptions import InvalidTokenError
-from models import UserRole, User
+from app.models import UserRole, User
 from pydantic import ValidationError
-from repositories import UserRepository
 from sqlalchemy.orm import Session
 
 

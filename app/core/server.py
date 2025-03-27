@@ -4,11 +4,11 @@ from fastapi.routing import APIRoute
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from api.routes import router as api_router
-from core.config import settings
-from core.exceptions import CustomException
-from core.fastapi.dependencies import Logging
-from core.fastapi.middlewares import (
+from app.api.routes import router as api_router
+from app.core.config import settings
+from app.core.exceptions import CustomException
+from app.core.fastapi.dependencies import Logging
+from app.core.fastapi.middlewares import (
     ResponseLoggerMiddleware,
 )
 

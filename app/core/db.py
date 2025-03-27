@@ -1,7 +1,7 @@
 from collections.abc import Generator
 from sqlmodel import Session, create_engine
 
-from core.config import settings
+from app.core.config import settings
 
 engine = create_engine(str(settings.SQLALCHEMY_DATABASE_URI))
 

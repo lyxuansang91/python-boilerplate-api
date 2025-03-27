@@ -18,6 +18,8 @@ def parse_cors(v: Any) -> list[str] | str:
 
 
 class Settings(BaseSettings):
+    model_config = SettingsConfigDict(env_file=".env")
+    PORT: int = 8000
     API_V1_STR: str = "/api/v1"
     ALGORITHM: str = "HS256"
     SECRET_KEY: str = secrets.token_urlsafe(32)
@@ -45,7 +47,20 @@ class Settings(BaseSettings):
     SMTP_SENDER: str = "noreply@yourdomain.com"
     FRONT_END_URL: str ="https://dev.stock.picontechnology.com"
 
-    model_config = SettingsConfigDict(env_file=".env")
+    # Redis settings
+    REDIS_HOST: str = "localhost"
+    REDIS_PORT: int = 6379
+
+    #edinet key
+
+    EDINET_API_KEY: str
+
+    # s3
+    AWS_ACCESS_KEY_ID: str
+    AWS_SECRET_ACCESS_KEY: str
+    BUCKET: str
+    AWS_REGION: str
+    BUCKET: str
 
     @computed_field
     @property
