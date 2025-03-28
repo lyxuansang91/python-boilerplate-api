@@ -1,13 +1,18 @@
 # from core.security import get_password_hash
+from fastapi import APIRouter, Depends, HTTPException, status
+from pydantic import ValidationError
+
 from app.deps import get_current_user
 from app.factory import Factory
-from fastapi import APIRouter, Depends, status
 from app.models import User
-from app.schemas.requests import LoginRequest, RegisterRequest, UpdateUserRequest, ChangePasswordRequest
+from app.schemas.requests import (
+    ChangePasswordRequest,
+    LoginRequest,
+    RegisterRequest,
+    UpdateUserRequest,
+)
 from app.schemas.responses import TokenResponse, UserResponse
 from app.services import AuthService, UserService
-from pydantic import EmailStr, ValidationError
-from fastapi import HTTPException
 
 router = APIRouter()
 

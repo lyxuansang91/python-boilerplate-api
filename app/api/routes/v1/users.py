@@ -1,8 +1,14 @@
-from app.deps import get_current_active_admin, get_current_user
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, status
+
+from app.deps import get_current_active_admin
 from app.factory import Factory
-from fastapi import APIRouter, Depends, HTTPException, Query, status, BackgroundTasks
 from app.models import User
-from app.schemas.requests import CreateUserRequest, ForgotPasswordRequest, ResetPasswordRequest, VerifyResetTokenRequest
+from app.schemas.requests import (
+    CreateUserRequest,
+    ForgotPasswordRequest,
+    ResetPasswordRequest,
+    VerifyResetTokenRequest,
+)
 from app.schemas.responses import PaginatedResponse, UserResponse
 from app.services import UserService
 
@@ -14,7 +20,7 @@ def list_users(
     search: str | None = Query(None, description="Search term for email or full name"),
     page: int = Query(1, ge=1, description="Number of items to page"),
     limit: int = Query(10, ge=1, le=100, description="Number of items to return"),
-    current_user: User = Depends(get_current_active_admin),  # No default value
+    _: User = Depends(get_current_active_admin),  # No default value
     user_service: UserService = Depends(Factory().get_user_service),
 ) -> PaginatedResponse[UserResponse]:
     """
@@ -39,7 +45,7 @@ def list_users(
 @router.post("", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 def create_user(
     create_request: CreateUserRequest,
-    current_user: User = Depends(get_current_active_admin),  # No default value
+    _: User = Depends(get_current_active_admin),  # No default value
     user_service: UserService = Depends(Factory().get_user_service),
 ) -> UserResponse:
     """
@@ -118,7 +124,6 @@ def reset_password(
     """
     # Reset the password
     try:
-    
         user_service.reset_password(request.token, request.new_password)
         return {"message": "Password has been reset."}
     except Exception as e:

@@ -1,4 +1,4 @@
-from pydantic import Field, ConfigDict
+from pydantic import ConfigDict, Field
 from sqlmodel import SQLModel
 from starlette.datastructures import Headers
 from starlette.types import ASGIApp, Message, Receive, Scope, Send

@@ -1,6 +1,6 @@
 import pytest
 from fastapi.testclient import TestClient
-from sqlmodel import Session
+
 from app.core.config import settings
 
 
@@ -11,9 +11,7 @@ from app.core.config import settings
         ("healths/readiness", {"status": "UP"}),
     ],
 )
-def test_health_endpoints(
-    client: TestClient, db_session: Session, endpoint, expected_status
-) -> None:
+def test_health_endpoints(client: TestClient, endpoint, expected_status) -> None:
     url = f"{settings.API_V1_STR}/{endpoint}"
     r = client.get(url)
     assert r.status_code == 200

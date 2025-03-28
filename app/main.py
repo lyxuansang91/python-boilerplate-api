@@ -1,5 +1,6 @@
 import os
 import sys
+
 import uvicorn
 
 # Add the project root directory to Python path
@@ -13,11 +14,7 @@ app = create_app()
 
 def main():
     uvicorn.run(
-        app="app.main:app",
-        host="0.0.0.0",
-        reload=True,
-        workers=1,
-        port=settings.PORT
+        app="app.main:app", host="0.0.0.0", reload=True, workers=1, port=settings.PORT
     )
 
 

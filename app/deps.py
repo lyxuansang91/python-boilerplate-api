@@ -2,16 +2,17 @@ from collections.abc import Generator
 from typing import Annotated
 
 import jwt
-from app.core.security import bearer_security
-from app.core.config import settings
-from app.repositories import UserRepository
-from app.core.db import engine
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials
 from jwt.exceptions import InvalidTokenError
-from app.models import UserRole, User
 from pydantic import ValidationError
 from sqlalchemy.orm import Session
+
+from app.core.config import settings
+from app.core.db import engine
+from app.core.security import bearer_security
+from app.models import User, UserRole
+from app.repositories import UserRepository
 
 
 def get_db() -> Generator[Session, None, None]:
@@ -34,10 +35,10 @@ def get_current_user(
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
-    
+
     if not token or not token.credentials:
         raise credentials_exception
-        
+
     try:
         payload = jwt.decode(
             token.credentials, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]

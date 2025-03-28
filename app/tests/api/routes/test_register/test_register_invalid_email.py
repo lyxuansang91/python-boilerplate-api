@@ -1,8 +1,8 @@
 import pytest
 from fastapi.testclient import TestClient
+from sqlmodel import Session
+
 from app.core.config import settings
-from sqlmodel import Session, select, delete
-from app.models import User
 
 
 @pytest.mark.parametrize(
@@ -16,7 +16,7 @@ from app.models import User
     ],
 )
 def test_register_user_invalid_email(
-    db_session: Session, client: TestClient, invalid_email
+    _: Session, client: TestClient, invalid_email
 ) -> None:
     r = client.post(
         f"{settings.API_V1_STR}/auth/register",

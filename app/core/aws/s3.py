@@ -1,7 +1,8 @@
-import boto3
 import logging
+
+import boto3
+
 from app.core.config import settings
-from typing import Optional
 
 logger = logging.getLogger(__name__)
 
@@ -15,7 +16,7 @@ class S3Client:
         )
         self.bucket_name = settings.BUCKET
 
-    def upload_file(self, file_path: str, s3_key: str, content_type: Optional[str] = None) -> str:
+    def upload_file(self, file_path: str, s3_key: str, content_type: str | None = None) -> str:
         """
         Upload file to S3 and return the URL
         """
@@ -25,8 +26,8 @@ class S3Client:
                 extra_args['ContentType'] = content_type
 
             self.s3_client.upload_file(
-                file_path, 
-                self.bucket_name, 
+                file_path,
+                self.bucket_name,
                 s3_key,
                 ExtraArgs=extra_args
             )

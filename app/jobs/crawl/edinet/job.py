@@ -1,14 +1,12 @@
 # demo.py
 import logging
 import os
-import time
 from datetime import datetime, timedelta
-from app.repositories.company_repository import CompanyRepository
-from app.jobs.crawl.edinet.edinet import get_documents_for_date_range, get_document
+
 from app.core.aws.s3 import S3Client
-from app.helper.function_helper import process_zip_directory
-from sqlalchemy.orm import Session
 from app.core.db import get_session
+from app.jobs.crawl.edinet.edinet import get_document, get_documents_for_date_range
+from app.repositories.company_repository import CompanyRepository
 
 logger = logging.getLogger(__name__)
 
@@ -17,14 +15,14 @@ def get_megabanks() -> dict[str, str]:
     companies, _ = company_repository.get_companies()
     return {company.code: company.name for company in companies}
 
-def save_and_update_company(doc_res, company_repository: CompanyRepository, 
+def save_and_update_company(doc_res, company_repository: CompanyRepository,
                           company_code: str, doc_info: dict) -> None:
     """Save document to S3 and update company description"""
     try:
         # Prepare paths
         save_dir = 'data'
         os.makedirs(save_dir, exist_ok=True)
-        
+
         save_name = f"{doc_info['edinet_code']}_{doc_info['filer']}_{doc_info['type']}_{doc_info['id']}.zip"
         local_path = os.path.join(save_dir, save_name)
         s3_key = f"edinet_docs/{datetime.now().strftime('%Y/%m/%d')}/{save_name}"
@@ -70,9 +68,9 @@ def run():
     company_codes = {company.code: company.name for company in companies}
 
     docs = get_documents_for_date_range(
-        start_date, 
-        end_date, 
-        list(company_codes.keys()), 
+        start_date,
+        end_date,
+        list(company_codes.keys()),
         doc_type_codes
     )
 
@@ -89,16 +87,16 @@ def run():
                 'type': doc['docTypeCode'],
                 'filer': doc['filerName']
             }
-            
+
             doc_res = get_document(doc_info['id'])
             save_and_update_company(
-                doc_res, 
-                company_repository, 
-                doc['edinetCode'], 
+                doc_res,
+                company_repository,
+                doc['edinetCode'],
                 doc_info
             )
             results.append(doc_info)
-            
+
         except Exception as e:
             logger.error(f"Error processing document {doc['docID']}: {str(e)}")
             continue

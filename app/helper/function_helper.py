@@ -1,11 +1,11 @@
 # utils.py
 import os
-import pandas as pd
 import re
-import chardet
 import tempfile
 import zipfile
-from typing import List, Dict
+
+import chardet
+import pandas as pd
 
 
 # Encoding and file reading
@@ -105,14 +105,14 @@ def process_zip_file(path_to_zip_file, doc_id, doc_type_code):
                 result['docID'] = doc_id
                 result['doc_type_code'] = doc_type_code
             all_results.extend(results)
-    except Exception as e:
+    except Exception:
         # print(f"Error processing {path_to_zip_file}: {str(e)}")
         pass
     return all_results
 
 
 def process_zip_directory(directory_path: str,
-                          doc_type_codes: List[str] = None) -> List[Dict]:
+                          doc_type_codes: list[str] = None) -> list[dict]:
     all_results = []
     for filename in os.listdir(directory_path):
         if filename.endswith('.zip'):

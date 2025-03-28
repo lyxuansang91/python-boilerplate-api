@@ -1,12 +1,12 @@
 from .auth_request import (
+    ChangePasswordRequest,
+    ForgotPasswordRequest,
     LoginRequest,
     RegisterRequest,
-    ForgotPasswordRequest,
     ResetPasswordRequest,
     VerifyResetTokenRequest,
-    ChangePasswordRequest,
 )
-from .user_request import UpdateUserRequest, CreateUserRequest
+from .user_request import CreateUserRequest, UpdateUserRequest
 
 __all__ = [
     "LoginRequest",

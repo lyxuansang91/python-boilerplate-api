@@ -1,16 +1,18 @@
-from app.models.company import Company
+
 from sqlalchemy.orm import Session
-from typing import Optional, Tuple, List
+
+from app.models.company import Company
+
 
 class CompanyRepository:
     def __init__(self, session: Session):
         self.session = session
         self.model_class = Company
 
-    def get_by_id(self, company_id: int) -> Optional[Company]:
+    def get_by_id(self, company_id: int) -> Company | None:
         return self.session.query(Company).filter(Company.id == company_id).first()
 
-    def get_by_code(self, code: str) -> Optional[Company]:
+    def get_by_code(self, code: str) -> Company | None:
         return self.session.query(Company).filter(Company.code == code).first()
 
     def create_company(self, company_data: dict) -> Company:
@@ -29,7 +31,7 @@ class CompanyRepository:
         self.session.refresh(company)
         return company
 
-    def get_companies(self, search: Optional[str] = None, skip: int = 0, limit: int = 10) -> Tuple[List[Company], int]:
+    def get_companies(self, search: str | None = None, skip: int = 0, limit: int = 10) -> tuple[list[Company], int]:
         query = self.session.query(Company)
 
         if search:
