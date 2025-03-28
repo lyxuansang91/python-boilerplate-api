@@ -3,13 +3,12 @@ import sys
 
 import pytest
 from fastapi.testclient import TestClient
-from sqlmodel import Session, create_engine
+from sqlmodel import Session, create_engine, select
 
+from app.core import security
+from app.deps import get_db
 from app.main import app
 from app.models import Base, User, UserRole
-from app.core import security
-from sqlmodel import select
-from app.deps import get_db
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
@@ -24,7 +23,18 @@ DATABASE_URL = f"postgresql://{POSTGRES_USER}:{POSTGRES_PASSWORD}@{POSTGRES_SERV
 engine = create_engine(DATABASE_URL, echo=True)
 
 
-def seed_users(session):
+@pytest.fixture(scope="function")
+def db_session():
+    """Mở session database test (reset sau mỗi test)."""
+    Base.metadata.create_all(engine)
+    with Session(engine) as session:
+        yield session
+        session.rollback()
+    Base.metadata.drop_all(engine)
+
+
+@pytest.fixture
+def sample_users(db_session: Session) -> None:
     """Thêm user mặc định vào database test."""
 
     default_users_data = [
@@ -43,30 +53,13 @@ def seed_users(session):
     ]
 
     for user_data in default_users_data:
-        existing_user = session.exec(
+        existing_user = db_session.exec(
             select(User).where(User.email == user_data["email"])
         ).first()
 
         if not existing_user:
-            session.add(User(**user_data))
-    session.commit()
-
-
-@pytest.fixture(scope="session", autouse=True)
-def setup_test_db():
-    Base.metadata.create_all(engine)
-    with Session(engine) as session:
-        seed_users(session)  # Gọi hàm tạo user mặc định
-    yield
-    Base.metadata.drop_all(engine)
-
-
-@pytest.fixture(scope="function")
-def db_session():
-    """Mở session database test (reset sau mỗi test)."""
-    with Session(engine) as session:
-        yield session
-        session.rollback()
+            db_session.add(User(**user_data))
+    db_session.commit()
 
 
 @pytest.fixture(scope="function")
