@@ -1,7 +1,7 @@
 from celery import Celery
 
 from app.core.config import settings
-from app.jobs.crawl.edinet.job import run
+from app.jobs.crawl.edinet.edinet_crawler import EdinetCrawler
 
 # Create Celery app
 celery = Celery(
@@ -20,7 +20,8 @@ celery.conf.update(
 def monthly_task():
     """Task that runs on 3rd day of every month"""
     try:
-        run()
+        crawler = EdinetCrawler()
+        crawler.run()
         print("Running monthly task on 3rd day")
 
     except Exception as e:

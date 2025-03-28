@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from sqlalchemy import Column, DateTime, Integer, String
 
 from . import Base
@@ -13,6 +15,7 @@ class Company(Base, TimestampMixin):
     description = Column(String)
     valid_from = Column(DateTime)
     valid_to = Column(DateTime)
-
+    created_at = Column(DateTime, default=datetime.now, nullable=False)
+    updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now, nullable=False)
     def __repr__(self):
         return f"<Company(name={self.name}, code={self.code})>"

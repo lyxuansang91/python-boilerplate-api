@@ -4,6 +4,7 @@ from typing import Any, Literal
 from pydantic import (
     PostgresDsn,
     computed_field,
+    validator,
 )
 from pydantic_core import MultiHostUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -19,7 +20,15 @@ def parse_cors(v: Any) -> list[str] | str:
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env")
-    PORT: int = 8000
+    PORT: int = 8000  # Add default value 8000
+
+    @validator("PORT", pre=True)
+    def get_port(cls, v: Any | None) -> int:
+        """Get PORT from env or use default 8000"""
+        if isinstance(v, str):
+            return int(v)
+        return v or 8000
+
     API_V1_STR: str = "/api/v1"
     ALGORITHM: str = "HS256"
     SECRET_KEY: str = secrets.token_urlsafe(32)

@@ -38,6 +38,27 @@ class S3Client:
             logger.error(f"Error uploading file to S3: {str(e)}")
             raise
 
+    def upload_file_with_response(self, response, s3_key: str, content_type: str | None = None) -> str:
+        try:
+            extra_args = {}
+            if content_type:
+                extra_args['ContentType'] = content_type
+
+            self.s3_client.upload_fileobj(
+                response,
+                self.bucket_name,
+                s3_key,
+                ExtraArgs=extra_args
+            )
+
+            url = f"https://{self.bucket_name}.s3.{settings.AWS_REGION}.amazonaws.com/{s3_key}"
+            logger.info(f"Successfully uploaded file to {url}")
+            return url
+
+        except Exception as e:
+            logger.error(f"Error uploading response to S3: {str(e)}")
+            raise
+
     def download_file(self, s3_key: str, local_path: str) -> None:
         """
         Download file from S3

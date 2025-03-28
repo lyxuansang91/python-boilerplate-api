@@ -1,14 +1,11 @@
 
-from sqlalchemy.orm import Session
 
 from app.models.company import Company
 
+from .base_repository import BaseRepository
 
-class CompanyRepository:
-    def __init__(self, session: Session):
-        self.session = session
-        self.model_class = Company
 
+class CompanyRepository(BaseRepository[Company]):
     def get_by_id(self, company_id: int) -> Company | None:
         return self.session.query(Company).filter(Company.id == company_id).first()
 
