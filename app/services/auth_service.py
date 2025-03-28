@@ -1,13 +1,14 @@
 # from core.database import Propagation, Transactional
-from core import security
-from core.config import settings
-from core.exceptions import BadRequestException
-from models import User
 from pydantic import EmailStr
-from repositories import UserRepository
-from schemas.extras.token import Token
 
-from services import BaseService
+from app.core import security
+from app.core.config import settings
+from app.core.exceptions import BadRequestException
+from app.models import User
+from app.repositories import UserRepository
+from app.schemas.extras.token import Token
+
+from . import BaseService
 
 
 class AuthService(BaseService[User]):

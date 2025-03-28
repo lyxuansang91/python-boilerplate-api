@@ -1,12 +1,12 @@
 from typing import Any
 
-from core.email import send_email
-from core.security import get_password_hash, get_sub_from_token, verify_password
-from core.config import settings
-from models import User
-from repositories import UserRepository
+from app.core.config import settings
+from app.core.email import send_email
+from app.core.security import get_password_hash, get_sub_from_token, verify_password
+from app.models import User
+from app.repositories import UserRepository
 
-from services import BaseService
+from . import BaseService
 
 
 class UserService(BaseService[User]):
@@ -33,7 +33,7 @@ class UserService(BaseService[User]):
         user_data["hash_password"] = get_password_hash(user_data["password"])
         del user_data["password"]
         return self.user_repository.create(user_data)
-    
+
     def update_password(self, user: User, old_password: str, new_password: str) -> None:
         if not verify_password(old_password, user.hash_password):
             raise Exception("Invalid old password")
@@ -55,7 +55,9 @@ class UserService(BaseService[User]):
 
     def send_forgot_password_email(self, user: User, reset_token: str) -> None:
         subject = "Password Reset Request"
-        reset_url = f"https://{settings.FRONT_END_URL}/reset-password?token={reset_token}"
+        reset_url = (
+            f"https://{settings.FRONT_END_URL}/reset-password?token={reset_token}"
+        )
         body = f"""
         Hi {user.email},
 
@@ -92,7 +94,6 @@ class UserService(BaseService[User]):
         sub = get_sub_from_token(token)
         if sub is None:
             return False
-        
+
         user = self.user_repository.get_by_id(int(sub))
         return True if user else False
-    

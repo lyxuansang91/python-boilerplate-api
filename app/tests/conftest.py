@@ -1,10 +1,12 @@
-import pytest
 import os
 import sys
+
+import pytest
 from fastapi.testclient import TestClient
 from sqlmodel import Session, create_engine
-from app.main import app
+
 from app.core.db import get_session
+from app.main import app
 from app.models import Base
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))

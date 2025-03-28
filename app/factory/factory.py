@@ -1,10 +1,11 @@
 from functools import partial
 
-from deps import get_db
 from fastapi import Depends
-from models import User
-from repositories import UserRepository
-from services import AuthService, UserService
+
+from app.deps import get_db
+from app.models import User
+from app.repositories import UserRepository
+from app.services import AuthService, UserService
 
 
 class Factory:
