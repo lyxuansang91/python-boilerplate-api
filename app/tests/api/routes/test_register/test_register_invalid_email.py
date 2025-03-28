@@ -16,7 +16,7 @@ from app.core.config import settings
     ],
 )
 def test_register_user_invalid_email(
-    _: Session, client: TestClient, invalid_email
+    db_session: Session, client: TestClient, invalid_email  # noqa
 ) -> None:
     r = client.post(
         f"{settings.API_V1_STR}/auth/register",

@@ -27,7 +27,7 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8
     REFRESH_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 14
     RESET_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 1
-    ENVIRONMENT: Literal["local", "staging", "production"] = "local"
+    ENVIRONMENT: Literal["local", "staging", "production", "test"] = "local"
     BACKEND_CORS_ORIGINS: str | list[str] = "http://localhost:8000"
     PROJECT_NAME: str = "FastAPI"
 
@@ -37,6 +37,7 @@ class Settings(BaseSettings):
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str = ""
     POSTGRES_DB: str = ""
+    POSTGRES_DB_TEST: str = "stockbot_test"
 
     # Email settings
     SMTP_SERVER: str = "ap-northeast-1"
@@ -45,13 +46,13 @@ class Settings(BaseSettings):
     SMTP_ACCESS_KEY: str = ""
     SMTP_SECRET_KEY: str = ""
     SMTP_SENDER: str = "noreply@yourdomain.com"
-    FRONT_END_URL: str ="https://dev.stock.picontechnology.com"
+    FRONT_END_URL: str = "https://dev.stock.picontechnology.com"
 
     # Redis settings
     REDIS_HOST: str = "localhost"
     REDIS_PORT: int = 6379
 
-    #edinet key
+    # edinet key
 
     EDINET_API_KEY: str
 

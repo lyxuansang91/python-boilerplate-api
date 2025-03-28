@@ -13,9 +13,7 @@ from app.core.config import settings
         ("password", {"email": "test@example.com", "password": None}),  # Password null
     ],
 )
-def test_register_user_missing_fields(
-    client: TestClient, _: str, payload: dict[str, str]
-):
+def test_register_user_missing_fields(client: TestClient, field, payload):  # noqa
     r = client.post(f"{settings.API_V1_STR}/auth/register", json=payload)
 
     assert r.status_code == 422

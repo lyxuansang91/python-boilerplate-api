@@ -12,7 +12,6 @@ from sqlalchemy import engine_from_config, pool
 config = context.config
 
 
-
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
 fileConfig(config.config_file_name)
@@ -33,8 +32,10 @@ target_metadata = Base.metadata
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
 
+
 def get_url():
     return str(settings.SQLALCHEMY_DATABASE_URI)
+
 
 def run_migrations_offline():
     """Run migrations in 'offline' mode.
