@@ -29,3 +29,4 @@ fi
 ENVIRONMENT=test poetry run pytest app/tests/api/routes/test_register
 ENVIRONMENT=test poetry run pytest app/tests/api/routes/healths
 ENVIRONMENT=test poetry run pytest app/tests/api/routes/auth
+ENVIRONMENT=test poetry run pytest -s app/tests/api/routes/users
