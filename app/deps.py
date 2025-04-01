@@ -22,14 +22,15 @@ def get_db() -> Generator[Session, None, None]:
 
 SessionDep = Annotated[Session, Depends(get_db)]
 
+
 def get_user_repository(session: SessionDep) -> UserRepository:
     return UserRepository(model=User, session=session)
 
 
 def get_current_user(
-        token: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer_security)],
-        user_repository: UserRepository = Depends(get_user_repository),
-        ) -> User:
+    token: Annotated[HTTPAuthorizationCredentials | None, Depends(bearer_security)],
+    user_repository: UserRepository = Depends(get_user_repository),
+) -> User:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -43,7 +44,7 @@ def get_current_user(
         payload = jwt.decode(
             token.credentials, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
         )
-        user_id: int = int(payload.get('sub'))
+        user_id: int = int(payload.get("sub"))
         if user_id is None:
             raise credentials_exception
         user = user_repository.get_by_id(user_id)

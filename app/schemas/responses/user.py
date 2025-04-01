@@ -11,3 +11,7 @@ class UserResponse(BaseModel):
     updated_at: datetime | None
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class UserResponseWithRole(UserResponse):
+    role: str | None

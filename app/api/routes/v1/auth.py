@@ -11,7 +11,7 @@ from app.schemas.requests import (
     RegisterRequest,
     UpdateUserRequest,
 )
-from app.schemas.responses import TokenResponse, UserResponse
+from app.schemas.responses import TokenResponse, UserResponse, UserResponseWithRole
 from app.services import AuthService, UserService
 
 router = APIRouter()
@@ -61,10 +61,10 @@ async def register_with_email(
     )
 
 
-@router.get("/me", response_model=UserResponse)
+@router.get("/me", response_model=UserResponseWithRole)
 def get_user_profile(
     current_user: User = Depends(get_current_user),
-) -> UserResponse:
+) -> UserResponseWithRole:
     """
     Retrieve the profile of the currently authenticated user.
 
@@ -73,7 +73,7 @@ def get_user_profile(
                          obtained through dependency injection.
 
     Returns:
-    UserResponse: The profile information of the current user.
+    UserResponseWithRole: The profile information of the current user.
     """
     return current_user
 
@@ -83,7 +83,7 @@ async def update_user_profile(
     update_request: UpdateUserRequest,
     current_user: User = Depends(get_current_user),
     user_service: UserService = Depends(Factory().get_user_service),
-) -> UserResponse:
+) -> UserResponseWithRole:
     """
     Update the profile of the currently authenticated user.
 
@@ -100,6 +100,7 @@ async def update_user_profile(
 
     return updated_user
 
+
 @router.post("/change-password", status_code=status.HTTP_200_OK)
 async def change_password(
     change_password_request: ChangePasswordRequest,
@@ -107,7 +108,11 @@ async def change_password(
     user_service: UserService = Depends(Factory().get_user_service),
 ) -> dict:
     try:
-        user_service.update_password(current_user, change_password_request.old_password, change_password_request.new_password)
+        user_service.update_password(
+            current_user,
+            change_password_request.old_password,
+            change_password_request.new_password,
+        )
         return {"message": "Password changed successfully"}
     except Exception as e:
         raise HTTPException(
