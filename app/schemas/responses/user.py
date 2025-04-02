@@ -9,6 +9,9 @@ class UserResponse(BaseModel):
     is_active: bool | None
     created_at: datetime | None
     updated_at: datetime | None
+    first_name: str | None
+    last_name: str | None
+    address: str | None
 
     model_config = ConfigDict(from_attributes=True)
 
