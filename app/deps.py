@@ -6,15 +6,31 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials
 from jwt.exceptions import InvalidTokenError
 from pydantic import ValidationError
+from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
+from tenacity import retry, stop_after_attempt, wait_exponential
 
 from app.core.config import settings
-from app.core.db import engine
 from app.core.security import bearer_security
 from app.models import User, UserRole
 from app.repositories import UserRepository
 
+engine = create_engine(
+    str(settings.SQLALCHEMY_DATABASE_URI),
+    pool_size=5,
+    max_overflow=10,
+    pool_timeout=30,
+    pool_recycle=1800,
+    pool_pre_ping=True,
+    echo=settings.ENVIRONMENT == "local",
+)
 
+
+@retry(
+    stop=stop_after_attempt(3),
+    wait=wait_exponential(multiplier=1, min=4, max=10),
+    reraise=True,
+)
 def get_db() -> Generator[Session, None, None]:
     with Session(engine) as session:
         yield session

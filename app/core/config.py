@@ -4,7 +4,7 @@ from typing import Any, Literal
 from pydantic import (
     PostgresDsn,
     computed_field,
-    validator,
+    field_validator,
 )
 from pydantic_core import MultiHostUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -22,7 +22,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env")
     PORT: int = 8000  # Add default value 8000
 
-    @validator("PORT", pre=True)
+    @field_validator("PORT", mode="before")
     def get_port(cls, v: Any | None) -> int:
         """Get PORT from env or use default 8000"""
         if isinstance(v, str):
