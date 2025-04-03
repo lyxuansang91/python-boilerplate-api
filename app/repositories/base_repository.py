@@ -14,7 +14,7 @@ class BaseRepository(Generic[ModelType]):
     """Base class for data repositories."""
 
     def __init__(self, model: type[ModelType], session: Session):
-        self.session = session
+        self.session = next(session)
         self.model_class: type[ModelType] = model
 
     def create(self, attributes: dict[str, Any] = None) -> ModelType:
@@ -84,6 +84,7 @@ class BaseRepository(Generic[ModelType]):
         :return: None
         """
         self.session.delete(model)
+        self.session.commit()
 
     def _query(
         self,
@@ -253,4 +254,5 @@ class BaseRepository(Generic[ModelType]):
         self.session.add(model)
         self.session.flush()
         self.session.commit()
+        self.session.refresh(model)
         return model
