@@ -2,6 +2,7 @@ from .auth_request import (
     ChangePasswordRequest,
     ForgotPasswordRequest,
     LoginRequest,
+    RefreshTokenRequest,
     RegisterRequest,
     ResetPasswordRequest,
     VerifyResetTokenRequest,
@@ -18,4 +19,5 @@ __all__ = [
     "VerifyResetTokenRequest",
     "VerifyResetTokenRequest",
     "ChangePasswordRequest",
+    "RefreshTokenRequest",
 ]

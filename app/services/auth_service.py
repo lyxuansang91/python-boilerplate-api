@@ -53,3 +53,32 @@ class AuthService(BaseService[User]):
                 token_type="refresh_token",
             ),
         )
+
+    def refresh_token(self, refresh_token: str) -> Token:
+        """Generate a new access token using refresh token"""
+        try:
+            # Verify the refresh token
+            user_id = security.get_sub_from_token(refresh_token)
+            if not user_id:
+                raise BadRequestException("Invalid refresh token")
+
+            # Get user from database
+            user = self.user_repository.get_by_id(user_id)
+            if not user:
+                raise BadRequestException("User not found")
+
+            # Generate new tokens
+            return Token(
+                access_token=security.create_token(
+                    subject=user.id,
+                    expires_delta=settings.ACCESS_TOKEN_EXPIRE_MINUTES,
+                    token_type="access_token",
+                ),
+                refresh_token=security.create_token(
+                    subject=user.id,
+                    expires_delta=settings.REFRESH_TOKEN_EXPIRE_MINUTES,
+                    token_type="refresh_token",
+                ),
+            )
+        except Exception as e:
+            raise BadRequestException(str(e))

@@ -8,6 +8,7 @@ from app.models import User
 from app.schemas.requests import (
     ChangePasswordRequest,
     LoginRequest,
+    RefreshTokenRequest,
     RegisterRequest,
     UpdateUserRequest,
 )
@@ -114,6 +115,34 @@ async def change_password(
             change_password_request.new_password,
         )
         return {"message": "Password changed successfully"}
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        )
+
+
+@router.post("/refresh-token", response_model=TokenResponse)
+async def refresh_token(
+    refresh_request: RefreshTokenRequest,
+    auth_service: AuthService = Depends(Factory().get_auth_service),
+) -> TokenResponse:
+    """
+    Generate a new access token using refresh token
+
+    Parameters:
+    refresh_request (RefreshTokenRequest): Contains the refresh token
+
+    Returns:
+    TokenResponse: New access token and refresh token
+    """
+    try:
+        token_response = auth_service.refresh_token(refresh_request.refresh_token)
+        return TokenResponse(
+            access_token=token_response.access_token,
+            # refresh_token=token_response.refresh_token,
+            token_type="bearer",
+        )
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
