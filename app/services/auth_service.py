@@ -63,7 +63,7 @@ class AuthService(BaseService[User]):
                 raise BadRequestException("Invalid refresh token")
 
             # Get user from database
-            user = self.user_repository.get_by_id(user_id)
+            user = self.user_repository.get_by_id(int(user_id))
             if not user:
                 raise BadRequestException("User not found")
 

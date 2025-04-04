@@ -140,7 +140,7 @@ async def refresh_token(
         token_response = auth_service.refresh_token(refresh_request.refresh_token)
         return TokenResponse(
             access_token=token_response.access_token,
-            # refresh_token=token_response.refresh_token,
+            refresh_token=token_response.refresh_token,
             token_type="bearer",
         )
     except Exception as e:
