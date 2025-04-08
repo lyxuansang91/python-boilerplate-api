@@ -14,7 +14,7 @@ class BaseRepository(Generic[ModelType]):
     """Base class for data repositories."""
 
     def __init__(self, model: type[ModelType], session: Session):
-        self.session = next(session)
+        self.session = session
         self.model_class: type[ModelType] = model
 
     def create(self, attributes: dict[str, Any] = None) -> ModelType:

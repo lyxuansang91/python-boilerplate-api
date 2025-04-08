@@ -7,9 +7,8 @@ from fastapi.security import HTTPAuthorizationCredentials
 from jwt.exceptions import InvalidTokenError
 from pydantic import ValidationError
 from sqlalchemy import create_engine
+from sqlalchemy.exc import InterfaceError, OperationalError
 from sqlalchemy.orm import Session
-from tenacity import retry, stop_after_attempt, wait_exponential
-from sqlalchemy.exc import OperationalError, InterfaceError
 
 from app.core.config import settings
 from app.core.security import bearer_security
@@ -27,20 +26,7 @@ engine = create_engine(
 )
 
 
-@retry(
-    stop=stop_after_attempt(3),
-    wait=wait_exponential(multiplier=1, min=4, max=10),
-    reraise=True
-)
 def get_db() -> Generator[Session, None, None]:
-    """
-    Get database session with retry mechanism.
-    
-    Retry strategy:
-    - Maximum 3 attempts
-    - Exponential backoff starting at 4 seconds, up to 10 seconds
-    - Only retry on OperationalError and InterfaceError
-    """
     try:
         with Session(engine) as session:
             yield session
