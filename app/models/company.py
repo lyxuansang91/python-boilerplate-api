@@ -13,9 +13,7 @@ class Company(Base, TimestampMixin):
     name = Column(String)
     code = Column(String)
     description = Column(String)
-    valid_from = Column(DateTime)
-    valid_to = Column(DateTime)
-    created_at = Column(DateTime, default=datetime.now, nullable=False)
-    updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now, nullable=False)
+    valid_from = Column(DateTime(timezone=True))
+    valid_to = Column(DateTime(timezone=True))
     def __repr__(self):
         return f"<Company(name={self.name}, code={self.code})>"

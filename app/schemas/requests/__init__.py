@@ -8,6 +8,7 @@ from .auth_request import (
     VerifyResetTokenRequest,
 )
 from .user_request import CreateUserRequest, UpdateUserRequest
+from .company_request import CompanyBase, CompanyCreate, CompanyUpdate, CompanyInDB
 
 __all__ = [
     "LoginRequest",
@@ -20,4 +21,8 @@ __all__ = [
     "VerifyResetTokenRequest",
     "ChangePasswordRequest",
     "RefreshTokenRequest",
+    "CompanyBase",
+    "CompanyCreate",
+    "CompanyUpdate",
+    "CompanyInDB",
 ]
