@@ -7,8 +7,8 @@ from .auth_request import (
     ResetPasswordRequest,
     VerifyResetTokenRequest,
 )
+from .company_request import CompanyBase, CompanyCreate, CompanyInDB, CompanyUpdate
 from .user_request import CreateUserRequest, UpdateUserRequest
-from .company_request import CompanyBase, CompanyCreate, CompanyUpdate, CompanyInDB
 
 __all__ = [
     "LoginRequest",

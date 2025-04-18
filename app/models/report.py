@@ -13,10 +13,12 @@ class REPORT_TYPE(Enum):
     EXTRAORDINARY_REPORT = "extraordinary report"
     OTHER = "other"
 
+
 class DOCUMENT_TYPE(Enum):
     PDF = "pdf"
     CSV = "csv"
     ZIP = "zip"
+
 
 class Report(Base):
     __tablename__ = "reports"
@@ -24,7 +26,11 @@ class Report(Base):
     id = Column(Integer, primary_key=True, index=True)
     company_id = Column(String, nullable=False)
     code = Column(String, nullable=False)
-    report_type = Column(String, nullable=False, comment="Annual report, Possession report, Extraordinary report, Other")
+    report_type = Column(
+        String,
+        nullable=False,
+        comment="Annual report, Possession report, Extraordinary report, Other",
+    )
     submitted_document = Column(String, nullable=True)
     submission_time = Column(DateTime, nullable=True)
     submitter = Column(String, nullable=True)
@@ -35,4 +41,6 @@ class Report(Base):
     valid_from = Column(DateTime, nullable=True)
     valid_to = Column(DateTime, nullable=True)
     created_at = Column(DateTime, default=datetime.now, nullable=False)
-    updated_at = Column(DateTime, default=datetime.now, onupdate=datetime.now, nullable=False)
+    updated_at = Column(
+        DateTime, default=datetime.now, onupdate=datetime.now, nullable=False
+    )

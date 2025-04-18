@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import Optional
 
 from pydantic import BaseModel
 
@@ -7,9 +6,9 @@ from pydantic import BaseModel
 class CompanyBase(BaseModel):
     name: str
     code: str
-    description: Optional[str] = None
-    valid_from: Optional[datetime] = None
-    valid_to: Optional[datetime] = None
+    description: str | None = None
+    valid_from: datetime | None = None
+    valid_to: datetime | None = None
 
 
 class CompanyCreate(CompanyBase):
@@ -30,4 +29,4 @@ class CompanyInDB(CompanyBase):
 
 
 class Company(CompanyInDB):
-    pass 
+    pass
