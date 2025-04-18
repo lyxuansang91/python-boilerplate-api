@@ -3,13 +3,13 @@ from fastapi import APIRouter, Depends, Query
 from app.deps import get_current_user
 from app.factory import factory_instance
 from app.models import User
-from app.schemas.responses import NotificationListResponse
+from app.schemas.responses import NotificationResponse, PaginatedResponse
 from app.services import NotificationService
 
 router = APIRouter()
 
 
-@router.get("", response_model=NotificationListResponse)
+@router.get("", response_model=PaginatedResponse[NotificationResponse])
 def list_notifications(
     search: str | None = Query(None, description="Search term for notifications"),
     page: int = Query(1, ge=1, description="Page number"),
@@ -18,7 +18,7 @@ def list_notifications(
     notification_service: NotificationService = Depends(
         factory_instance.get_notification_service
     ),
-) -> NotificationListResponse:
+) -> PaginatedResponse[NotificationResponse]:
     """
     Retrieve a paginated list of notifications.
 
@@ -37,7 +37,7 @@ def list_notifications(
         skip=skip, limit=limit, search=search
     )
 
-    return NotificationListResponse(
+    return PaginatedResponse[NotificationResponse](
         items=notifications,
         total=total,
         page=page,
