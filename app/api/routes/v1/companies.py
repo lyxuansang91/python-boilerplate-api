@@ -15,7 +15,7 @@ def list_companies(
     code: str | None = Query(None, description="Search term for code"),
     page: int = Query(1, ge=1, description="Number of items to page"),
     limit: int = Query(10, ge=1, le=1000, description="Number of items to return"),
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),  # noqa
     company_service: CompanyService = Depends(factory_instance.get_company_service),
 ) -> PaginatedResponse[CompanyInDB]:
     """
@@ -37,7 +37,7 @@ def list_companies(
 @router.get("/{company_id}", response_model=CompanyInDB)
 def get_company_detail(
     company_id: int,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),  # noqa
     company_service: CompanyService = Depends(factory_instance.get_company_service),
 ) -> CompanyInDB:
     """

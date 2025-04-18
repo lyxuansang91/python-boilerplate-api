@@ -1,5 +1,6 @@
 from .base import Base
-from .user import User, UserRole
 from .company import Company
+from .notification import Notification
+from .user import User, UserRole
 
-__all__ = ["User", "UserRole", "Base", "Company"]
+__all__ = ["User", "UserRole", "Base", "Company", "Notification"]
