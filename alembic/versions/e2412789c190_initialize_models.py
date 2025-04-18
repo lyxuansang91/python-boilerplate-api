@@ -1,6 +1,6 @@
 import sqlalchemy as sa
 from alembic import op
-from app.models.user import UserRole
+# from app.models.user import UserRole
 
 # revision identifiers, used by Alembic.
 revision = "e2412789c190"
@@ -24,8 +24,8 @@ def upgrade():
             "role",
             sa.String(length=50),
             nullable=False,
-            server_default=UserRole.USER.value,
-            default=UserRole.USER.value,
+            server_default="user",
+            default="user",
         ),
         sa.Column("is_active", sa.Boolean(), server_default=sa.text('true')),
         sa.Column(
