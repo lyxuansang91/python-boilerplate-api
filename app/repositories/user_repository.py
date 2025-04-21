@@ -1,5 +1,5 @@
-from core import security
-from models import User
+from app.core import security
+from app.models import User
 
 from .base_repository import BaseRepository
 
@@ -25,8 +25,9 @@ class UserRepository(BaseRepository[User]):
         return self.create(user_data)
 
     def get_users(self, search: str | None, skip: int = 0, limit: int = 10):
-        count_users = self._count(self._query(join_=None))
-        users = self.get_all(skip=skip, limit=limit)
+        pass
+        # count_users = self._count(self._query(join_=None))
+        # users = self.get_all(skip=skip, limit=limit)
 
     def create_reset_token(self, user: User) -> str | None:
         return security.create_reset_token(user.id)

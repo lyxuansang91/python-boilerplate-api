@@ -1,10 +1,16 @@
-from deps import get_current_active_admin
-from factory import Factory
-from fastapi import APIRouter, Depends, HTTPException, Query, status, BackgroundTasks
-from models import User
-from schemas.requests import CreateUserRequest
-from schemas.responses import PaginatedResponse, UserResponse
-from services import UserService
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Query, status
+
+from app.deps import get_current_active_admin
+from app.factory import Factory
+from app.models import User
+from app.schemas.requests import (
+    CreateUserRequest,
+    ForgotPasswordRequest,
+    ResetPasswordRequest,
+    VerifyResetTokenRequest,
+)
+from app.schemas.responses import PaginatedResponse, UserResponse
+from app.services import UserService
 
 router = APIRouter()
 
@@ -14,7 +20,7 @@ def list_users(
     search: str | None = Query(None, description="Search term for email or full name"),
     page: int = Query(1, ge=1, description="Number of items to page"),
     limit: int = Query(10, ge=1, le=100, description="Number of items to return"),
-    current_user: User = Depends(get_current_active_admin),  # No default value
+    _: User = Depends(get_current_active_admin),  # No default value
     user_service: UserService = Depends(Factory().get_user_service),
 ) -> PaginatedResponse[UserResponse]:
     """
@@ -39,7 +45,7 @@ def list_users(
 @router.post("", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
 def create_user(
     create_request: CreateUserRequest,
-    current_user: User = Depends(get_current_active_admin),  # No default value
+    _: User = Depends(get_current_active_admin),  # No default value
     user_service: UserService = Depends(Factory().get_user_service),
 ) -> UserResponse:
     """
@@ -74,23 +80,21 @@ def create_user(
 
 @router.post("/forgot-password", status_code=status.HTTP_200_OK)
 def forgot_password(
-    email: str = Query(
-        ..., description="The email of the user requesting password reset"
-    ),
+    request: ForgotPasswordRequest,
     user_service: UserService = Depends(Factory().get_user_service),
-    background_tasks: BackgroundTasks = BackgroundTasks(),  # Moved to the end
+    background_tasks: BackgroundTasks = BackgroundTasks(),
 ) -> dict:
     """
     Handle forgot password requests.
 
     Parameters:
-    - email: The email of the user requesting a password reset.
+    - request: The request containing the email of the user requesting a password reset.
 
     Returns:
     - A message indicating the password reset process has started.
     """
     # Check if the user exists
-    user = user_service.get_by_email(email)
+    user = user_service.get_by_email(request.email)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -104,8 +108,8 @@ def forgot_password(
 
 @router.post("/reset-password", status_code=status.HTTP_200_OK)
 def reset_password(
-    token: str = Query(..., description="The password reset token"),
-    new_password: str = Query(..., description="The new password"),
+    request: ResetPasswordRequest,
+    # current_user: User = Depends(get_current_user),
     user_service: UserService = Depends(Factory().get_user_service),
 ) -> dict:
     """
@@ -119,5 +123,20 @@ def reset_password(
     - A message indicating the password has been reset.
     """
     # Reset the password
-    user_service.reset_password(token, new_password)
-    return {"message": "Password has been reset."}
+    try:
+        user_service.reset_password(request.token, request.new_password)
+        return {"message": "Password has been reset."}
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e),
+        )
+
+
+@router.post("/verify-reset-token", status_code=status.HTTP_200_OK)
+def verify_reset_token(
+    request: VerifyResetTokenRequest,
+    user_service: UserService = Depends(Factory().get_user_service),
+) -> dict:
+    is_verifed = user_service.verify_reset_token(request.token)
+    return {"is_verified": is_verifed}

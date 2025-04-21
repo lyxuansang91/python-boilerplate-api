@@ -1,3 +1,3 @@
-from .factory import Factory
+from .factory import Factory, factory_instance
 
-__all__ = ["Factory"]
+__all__ = ["Factory", "factory_instance"]

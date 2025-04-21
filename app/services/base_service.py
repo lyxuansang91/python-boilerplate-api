@@ -1,10 +1,11 @@
 from typing import Any, Generic, TypeVar
 from uuid import UUID
 
-from core.exceptions import NotFoundException
-from models import Base
 from pydantic import BaseModel
-from repositories import BaseRepository
+
+from app.core.exceptions import NotFoundException
+from app.models import Base
+from app.repositories import BaseRepository
 
 ModelType = TypeVar("ModelType", bound=Base)
 
@@ -115,6 +116,6 @@ class BaseService(Generic[ModelType]):
         attributes: The attributes to update the object with.
         :return: The updated object.
         """
-        
+
         update_object = self.repository.update(model, attributes)
         return update_object

@@ -1,11 +1,12 @@
 from typing import Any
 
-from core.email import send_email
-from core.security import get_password_hash, get_sub_from_token
-from models import User
-from repositories import UserRepository
+from app.core.config import settings
+from app.core.email import send_email
+from app.core.security import get_password_hash, get_sub_from_token, verify_password
+from app.models import User
+from app.repositories import UserRepository
 
-from services import BaseService
+from . import BaseService
 
 
 class UserService(BaseService[User]):
@@ -33,6 +34,12 @@ class UserService(BaseService[User]):
         del user_data["password"]
         return self.user_repository.create(user_data)
 
+    def update_password(self, user: User, old_password: str, new_password: str) -> None:
+        if not verify_password(old_password, user.hash_password):
+            raise Exception("Invalid old password")
+        user.hash_password = get_password_hash(new_password)
+        self.user_repository.update(user, {"hash_password": user.hash_password})
+
     def get_users(
         self, search: str | None, skip: int = 0, limit: int = 10
     ) -> tuple[list[User], int]:
@@ -48,7 +55,9 @@ class UserService(BaseService[User]):
 
     def send_forgot_password_email(self, user: User, reset_token: str) -> None:
         subject = "Password Reset Request"
-        reset_url = f"https://yourdomain.com/reset-password?token={reset_token}"
+        reset_url = (
+            f"https://{settings.FRONT_END_URL}/reset-password?token={reset_token}"
+        )
         body = f"""
         Hi {user.email},
 
@@ -72,7 +81,19 @@ class UserService(BaseService[User]):
 
     def reset_password(self, token: str, new_password: str) -> None:
         sub = get_sub_from_token(token)
-        user = self.user_repository.get_by_id(int(sub))
-        if not user:
+        if sub:
+            user = self.user_repository.get_by_id(int(sub))
+            if user:
+                self.update_user(user, {"password": new_password})
+            else:
+                raise Exception("Invalid token")
+        else:
             raise Exception("Invalid token")
-        self.update_user(user, {"password": new_password})
+
+    def verify_reset_token(self, token: str) -> bool:
+        sub = get_sub_from_token(token)
+        if sub is None:
+            return False
+
+        user = self.user_repository.get_by_id(int(sub))
+        return True if user else False

@@ -5,11 +5,11 @@ import jwt
 from fastapi.security import HTTPBearer
 from passlib.context import CryptContext
 
-from core.config import settings
+from app.core.config import settings
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-bearer_security = HTTPBearer()
+bearer_security = HTTPBearer(auto_error=False)
 
 
 def create_token(
@@ -45,9 +45,5 @@ def get_sub_from_token(token: str) -> Any:
             token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
         )
         return payload["sub"]
-    except jwt.ExpiredSignatureError:
-        return "Signature has expired"
-    except jwt.InvalidTokenError:
-        return "Invalid token"
-    except Exception:
-        return "Invalid token"
+    except (jwt.ExpiredSignatureError, jwt.InvalidTokenError, Exception):
+        return None

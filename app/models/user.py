@@ -26,6 +26,9 @@ class User(Base, TimestampMixin):
     hash_password = Column(String(255), nullable=False)
     role = Column(String(50), nullable=False, default=UserRole.USER.value)
     is_active = Column(Boolean, default=True)
+    first_name = Column(String(100), nullable=True)
+    last_name = Column(String(100), nullable=True)
+    address = Column(String(255), nullable=True)
 
     @property
     def user_role(self) -> UserRole:

@@ -1,11 +1,12 @@
 import jwt
-from core.config import settings
-from schemas.extras.current_user import CurrentUser
 from starlette.authentication import AuthenticationBackend
 from starlette.middleware.authentication import (
     AuthenticationMiddleware as BaseAuthenticationMiddleware,
 )
 from starlette.requests import HTTPConnection
+
+from app.core.config import settings
+from app.schemas.extras.current_user import CurrentUser
 
 
 class AuthBackend(AuthenticationBackend):

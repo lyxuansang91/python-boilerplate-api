@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 # from sqlmodel import SQLModel
 
@@ -6,6 +6,4 @@ from pydantic import BaseModel, Field
 class CurrentUser(BaseModel):
     id: int = Field(None, description="User ID")
 
-    class Config:
-        validate_assignment = True
-        arbitrary_types_allowed = True
+    model_config = ConfigDict(validate_assignment=True, arbitrary_types_allowed=True)

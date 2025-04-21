@@ -1,16 +1,17 @@
 from fastapi import Depends, FastAPI, Request
 from fastapi.middleware import Middleware
-from fastapi.routing import APIRoute
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from fastapi.routing import APIRoute
 
-from api.routes import router as api_router
-from core.config import settings
-from core.exceptions import CustomException
-from core.fastapi.dependencies import Logging
-from core.fastapi.middlewares import (
+from app.api.routes import router as api_router
+from app.core.config import settings
+from app.core.exceptions import CustomException
+from app.core.fastapi.dependencies import Logging
+from app.core.fastapi.middlewares import (
     ResponseLoggerMiddleware,
 )
+
 
 def init_routers(app_: FastAPI) -> None:
     app_.include_router(api_router)
@@ -18,7 +19,7 @@ def init_routers(app_: FastAPI) -> None:
 
 def init_listeners(app_: FastAPI) -> None:
     @app_.exception_handler(CustomException)
-    async def custom_exception_handler(request: Request, exc: CustomException):
+    async def custom_exception_handler(_: Request, exc: CustomException):
         return JSONResponse(
             status_code=exc.code,
             content={"error_code": exc.error_code, "message": exc.message},

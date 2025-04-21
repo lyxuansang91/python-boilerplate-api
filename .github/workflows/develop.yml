@@ -1,0 +1,47 @@
+name: DEV Build & Deploy
+
+on:
+  push:
+    branches: [ "develop" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ECR_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_ECR_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_DEFAULT_REGION }}
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build, tag, and push docker image to Amazon ECR
+        env:
+          AWS_ECR_REGISTRY: ${{ vars.AWS_ECR_REGISTRY_URL }}
+          AWS_ECR_REPOSITORY: stock-be-dev
+          DOCKER_IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -t $AWS_ECR_REGISTRY/$AWS_ECR_REPOSITORY:$DOCKER_IMAGE_TAG -t $AWS_ECR_REGISTRY/$AWS_ECR_REPOSITORY:latest .
+          docker push $AWS_ECR_REGISTRY/$AWS_ECR_REPOSITORY:$DOCKER_IMAGE_TAG
+          docker push $AWS_ECR_REGISTRY/$AWS_ECR_REPOSITORY:latest
+
+      - name: Deploy to Portainer
+        uses: newarifrh/portainer-service-webhook@v1
+        with:
+          webhook_url: ${{ vars.PORTAINER_DEV_WEBHOOK_URL }}
+
+      - name: Notify Slack
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          fields: repo,commit,author,ref,workflow,job,pullRequest
+        env:
+          SLACK_WEBHOOK_URL: ${{ vars.SLACK_NOTIFICATION_WEBHOOK_URL }}
+        if: always()
